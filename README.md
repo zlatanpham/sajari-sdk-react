@@ -2,7 +2,7 @@
 
 ![npm version](https://img.shields.io/npm/v/sajari-react.svg?style=flat-square) ![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
-![screen shot 2017-04-21 at 3 50 19 pm](https://cloud.githubusercontent.com/assets/2771466/25264586/54e952aa-26ab-11e7-81fe-0cfb5c965061.png)
+![screen shot 2017-04-21 at 3 50 19 pm](https://cloud.githubusercontent.com/assets/2771466/25264699/fddcb370-26ab-11e7-803f-ab7fab2e2f28.png)
 
 **sajari-react** is a library of React Components for the [Sajari](https://www.sajari.com) search platform to help build fast and powerful search interfaces.
 
