@@ -2,7 +2,7 @@
 
 This integration helps getting sajari search on your site ASAP.
 
-![movie3](https://cloud.githubusercontent.com/assets/2771466/25263712/c9c3d3fe-26a4-11e7-8f99-e0ef1c33215a.gif)
+![movie4](https://cloud.githubusercontent.com/assets/2771466/25263860/0d156f86-26a6-11e7-882c-5cab81c56921.gif)
 
 ## How does it know what to search?
 
