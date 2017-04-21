@@ -2,7 +2,7 @@
 
 ![npm version](https://img.shields.io/npm/v/sajari-react.svg?style=flat-square) ![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
-![movie4](https://cloud.githubusercontent.com/assets/2771466/25263860/0d156f86-26a6-11e7-882c-5cab81c56921.gif)
+![screen shot 2017-04-21 at 3 50 19 pm](https://cloud.githubusercontent.com/assets/2771466/25264438/4511938e-26aa-11e7-9999-53d638b98643.png)
 
 **sajari-react** is a library of React Components for the [Sajari](https://www.sajari.com) search platform to help build fast and powerful search interfaces.
 
@@ -23,6 +23,8 @@ npm install --save sajari sajari-react
 ### [Site Search Integration](./examples/basic-site-integration/)
 
 The [site search integration](./examples/basic-site-integration/) is the fastest way to get an interface on your website.
+
+![movie4](https://cloud.githubusercontent.com/assets/2771466/25263860/0d156f86-26a6-11e7-882c-5cab81c56921.gif)
 
 ## License
 
