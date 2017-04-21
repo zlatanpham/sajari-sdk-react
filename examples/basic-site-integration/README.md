@@ -1,53 +1,14 @@
-# Website Search Integration - Query from URL
+# Website Search Integration
 
 This integration helps getting sajari search on your site ASAP.
 
 ![movie4](https://cloud.githubusercontent.com/assets/2771466/25263860/0d156f86-26a6-11e7-882c-5cab81c56921.gif)
 
-## How does it know what to search?
+## How do I get it ?
 
-Many CMS and website generators use the `q` query parameter in the URL to indicate a search. This is the ubiquitous way to indicate search on websites. For example, searching for `orange` would produce a URL like `example.com/search?q=orange`.
+You can either [generate it in your console](https://www.sajari.com/console/collections/install) prefilled with your config or build it from source.
 
-It's possible to use another parameter if your site is configured differently. Just replace the `q` in `getUrlParam("q")` with your desired parameter, eg `getUrlParam("search")`.
-
-## How does it work?
-
-The snippet is divided into 3 sections.
-
-- [Attachment Point](#attachment-point)
-- [Javascript](#javascript)
-- [Styling](#styling)
-
-Each section will talk about how it contributes to the interface.
-
-### Attachment point
-
-This is the place at which the results will display. You can place this anywhere in your html, just make sure this appears before the [Javascript](#javascript) is loaded.
-
-You can also skip this part and have the javascript attach to something that already exists on the page. More info in the [Javascript](#javascript) section.
-
-```html
-<div id="search-results"></div>
-```
-
-### Javascript
-
-This section is responsible for performing the integration and searching.
-
-It performs 2 tasks.
-
-1. Set up the values for the search.
-2. Pull in the search code that will perform the work of searching and displaying results.
-
-#### Configuring
-
-To direct the search into your data replace `<PROJECT>` and `<COLLECTION>` with your project and collection.
-
-To enable a search box above the results for instance search, set `searchBox` to `true`. Set to `false` to remove it.
-
-To attach to different element (Not the element supplied in [Attachment point](#attachment-point)), replace the value of `attachTarget` with the your element.
-
-### Styling
+## Styling
 
 The style element includes some basic styling for the results.
 
