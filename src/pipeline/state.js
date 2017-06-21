@@ -88,10 +88,11 @@ class state {
     // Record the QID and the sequence
     if (this.tracking.qid && this.tracking.seq >= 0) {
       tracking.i = this.tracking.qid;
-      tracking.s = this.tracking.seq+1;
+      tracking.s = this.tracking.seq;
     }
     this.tracking.qid = tracking.i;
-    this.tracking.seq = tracking.s;
+    // Because we're not keeping the Tracking object we have to manually increment the sequence
+    this.tracking.seq = tracking.s + 1;
 
     client.searchPipeline(this.pipeline, this.values, tracking, (err, res) => {
       // Discard this result if another (more recent query) has been sent through
@@ -101,7 +102,7 @@ class state {
       }
 
       // Discard this result if another (more recent query) has been sent.
-      if (this.tracking.seq >= tracking.s) {
+      if (this.tracking.seq > tracking.s) {
         return;
       }
 
