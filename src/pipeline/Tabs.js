@@ -27,8 +27,19 @@ class Tabs extends React.Component {
 
   onValuesChange() {
     let values = this._state().getValues();
-    if (values["filter"] === "") {
-      this.setState({ selected: this.props.defaultTab });
+
+    const { defaultTab, tabs } = this.props;
+
+    let defaultTabFilter = undefined;
+    tabs.forEach(t => {
+      if (t.title === defaultTab) {
+        defaultTabFilter = t.filter;
+      }
+    });
+
+    if (!values.filter && defaultTabFilter) {
+      this.setState({ selected: defaultTab });
+      this._state().setValues({ filter: defaultTabFilter });
     }
   }
 
