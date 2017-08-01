@@ -1,15 +1,19 @@
-import { Tracking } from "sajari";
+import { Tracking, valuesUpdatedEvent } from "./";
 
-import { valuesUpdatedEvent } from "./";
-
+/**
+ * Set up website tracking reset based on a query parameter changing.
+ * @param {Values} values Values object to listen to.
+ * @param {Tracking} tracking Tracking object to reset.
+ * @param {string} [paramQ="q"] Paramter to use as query from values.
+ */
 const initWebsiteTracking = (values, tracking, paramQ = "q") => {
   let prevQ = "";
   return values.listen(valuesUpdatedEvent, changed => {
-    if (changed.q === undefined) {
+    if (changed[paramQ] === undefined) {
       return;
     }
 
-    const newQ = changed.q;
+    const newQ = changed[paramQ];
     const first3CharactersChanged = !newQ.startsWith(
       prevQ.substr(0, Math.min(newQ.length, 3))
     );

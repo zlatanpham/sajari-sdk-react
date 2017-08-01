@@ -1,21 +1,27 @@
-import GA from "./ga";
-
 import {
   trackingResetEvent,
   responseUpdatedEvent,
-  resultClickedEvent
+  resultClickedEvent,
+  Listener
 } from "../controllers";
 
-class Analytics {
+export const pageClosedAnalyticsEvent = "page-close-analytics";
+export const bodyResetAnalyticsEvent = "body-reset-analytics";
+export const resultClickedAnalyticsEvent = "result-clicked-analytics";
+
+const events = [
+  pageClosedAnalyticsEvent,
+  bodyResetAnalyticsEvent,
+  resultClickedAnalyticsEvent
+];
+
+export class Analytics {
   /**
    * Constructs an analytics object that operates on the specified pipeline.
    * @param {Pipeline} pipeline
    * @param {Sajari.Tracking} tracking
-   * @param {GA} [ga=GoogleAnalytics]
    */
-  constructor(pipeline, tracking, ga = new GA()) {
-    this.ga = ga;
-
+  constructor(pipeline, tracking) {
     this.enabled = false;
     this.body = "";
 
@@ -35,6 +41,25 @@ class Analytics {
     this.pipeline.listen(responseUpdatedEvent, this.responseUpdated);
     this.pipeline.listen(resultClickedEvent, this.resultClicked);
     this.tracking.listen(trackingResetEvent, this.resetBody);
+
+    this.listeners = {
+      [pageClosedAnalyticsEvent]: new Listener(),
+      [bodyResetAnalyticsEvent]: new Listener(),
+      [resultClickedAnalyticsEvent]: new Listener()
+    };
+  }
+
+  /**
+   * Register a listener for a specific event.
+   * @param {string} event Event to listen for
+   * @param {function()} callback Callback to run when the event happens.
+   * @return {function()} The unregister function to remove the callback from the listener.
+   */
+  listen(event, callback) {
+    if (events.indexOf(event) === -1) {
+      throw new Error(`unknown event type "${event}"`);
+    }
+    return this.listeners[event].listen(callback);
   }
 
   /**
@@ -42,7 +67,9 @@ class Analytics {
    */
   beforeunload = () => {
     if (this.enabled && this.body) {
-      this.ga.onPageClose(this.body);
+      this.listeners[pageClosedAnalyticsEvent].notify(callback => {
+        callback(this.body);
+      });
       this.enabled = false;
     }
   };
@@ -54,9 +81,11 @@ class Analytics {
     if (this.enabled) {
       // Send the longest body since the last time the body was cleared.
       // Use completion if available.
-      this.ga.onBodyReset(
-        this.longestAutocompletedBody || this.longestNonAutocompletedBody
-      );
+      const bodyToSend =
+        this.longestAutocompletedBody || this.longestNonAutocompletedBody;
+      this.listeners[bodyResetAnalyticsEvent].notify(callback => {
+        callback(bodyToSend);
+      });
       this.longestNonAutocompletedBody = "";
       this.longestAutocompletedBody = "";
       this.enabled = false;
@@ -95,12 +124,12 @@ class Analytics {
    */
   resultClicked = () => {
     if (this.enabled && this.body) {
-      this.ga.onResultClicked(this.body);
+      this.listeners[resultClickedAnalyticsEvent].notify(callback => {
+        callback(this.body);
+      });
       this.longestNonAutocompletedBody = "";
       this.longestAutocompletedBody = "";
       this.enabled = false;
     }
   };
 }
-
-export default Analytics;

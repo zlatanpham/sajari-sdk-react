@@ -1,3 +1,10 @@
+import {
+  Analytics,
+  pageCloseAnalyticsEvent,
+  bodyResetAnalyticsEvent,
+  resultClickedAnalyticsEvent
+} from "./";
+
 const url = {
   /**
    * Convert a query string in to an object
@@ -80,10 +87,17 @@ const isFunction = x => typeof x === "function";
 class GoogleAnalytics {
   /**
    * Constructs a GoogleAnalytics object.
+   * @param {Analytics} analytics Analytics object to listen to.
    * @param {string} [id=undefined] The name of the ga global object. Defaults to "ga" or "_ua" if one isn't supplied.
    * @param {string} [param="q"] The URL parameter to use to indicate a search. Default to "q".
    */
-  constructor(id = undefined, param = "q") {
+  constructor(analytics, id = undefined, param = "q") {
+    this.listeners = [
+      analytics.listen(pageCloseAnalyticsEvent, this.onPageClose),
+      analytics.listen(bodyResetAnalyticsEvent, this.onBodyReset),
+      analytics.listen(resultClickedAnalyticsEvent, this.onResultClicked)
+    ];
+
     if (id !== undefined) {
       this.id = id;
     } else if (isFunction(window.ga)) {
@@ -97,14 +111,23 @@ class GoogleAnalytics {
   }
 
   /**
+   * Stops this object listening on the analytics object it was initialised with.
+   */
+  unregister() {
+    this.listeners.forEach(unregister => {
+      unregister();
+    });
+  }
+
+  /**
    * Sends a page view event if ga is found on the page and we're not in dev mode.
    * @param {string} body
    */
-  sendGAPageView(body) {
+  sendGAPageView = body => {
     if (
       this.id &&
       isFunction(window[this.id]) &&
-      process.env.NODE_ENV.environment !== "development"
+      true //process.env.NODE_ENV.environment !== "development"
     ) {
       // Merge the body in with the existing query params in the url
       const pageAddress = url.augmentUri(
@@ -114,31 +137,31 @@ class GoogleAnalytics {
       );
       window[this.id]("send", "pageview", pageAddress);
     }
-  }
+  };
 
   /**
    * Callback for when the body has been reset. Calls sendGAPageView.
    * @param {string} previousBody
    */
-  onBodyReset(previousBody) {
+  onBodyReset = previousBody => {
     this.sendGAPageView(previousBody);
-  }
+  };
 
   /**
    * Callback for when a result has been clicked. Calls sendGAPageView.
    * @param {string} body
    */
-  onResultClicked(body) {
+  onResultClicked = body => {
     this.sendGAPageView(body);
-  }
+  };
 
   /**
    * Callback for when the page has been closed. Calls sendGAPageView.
    * @param {string} body
    */
-  onPageClose(body) {
+  onPageClose = body => {
     this.sendGAPageView(body);
-  }
+  };
 }
 
 export default GoogleAnalytics;
