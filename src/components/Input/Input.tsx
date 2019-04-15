@@ -19,6 +19,7 @@ import {
 } from "../Search";
 import { VoiceInput, MicIcon, EmptyMicIcon } from "./Voice";
 import classnames from "classnames";
+import { trimPrefix } from "./shared/utils";
 export type InputMode = "standard" | "typeahead";
 export type DropdownMode = "none" | "suggestions" | "results";
 
@@ -65,7 +66,7 @@ interface InputState {
 }
 
 const itemToString = (item: Result) =>
-  (item != undefined && (item.values.title as string)) || "";
+  (item != undefined && item.values && (item.values.title as string)) || "";
 
 export class Input extends React.PureComponent<InputProps, InputState> {
   public static defaultProps = {
@@ -199,6 +200,9 @@ export class Input extends React.PureComponent<InputProps, InputState> {
         }
 
         return changes;
+
+      case Search.stateChangeTypes.blurInput:
+        return { ...changes, inputValue: this.state.typedInputValue };
 
       case Search.stateChangeTypes.clickItem:
         if (this.input) {
@@ -400,6 +404,18 @@ export class Input extends React.PureComponent<InputProps, InputState> {
                             setState({
                               inputValue: completion
                             });
+                          }
+                        }
+
+                        if (event.key === "Tab" && this.props.instantSearch) {
+                          if (trimPrefix(completion, inputValue || "")) {
+                            event.preventDefault();
+                            setState(state => ({
+                              ...state,
+                              inputValue: completion,
+                              selectedItem: completion
+                            }));
+                            this.setState({ typedInputValue: completion });
                           }
                         }
 
