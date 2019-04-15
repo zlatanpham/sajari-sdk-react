@@ -21,6 +21,14 @@ export const Tab: React.SFC<TabProps> = ({ title, styles = {} }) => (
           className={classnames("sj-tabs__tab", {
             "sj-tabs__tab--selected": isSelected
           })}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setFilter(set, title, !isSelected)();
+            }
+          }}
           isSelected={isSelected}
           onClick={setFilter(set, title, !isSelected)}
           css={styles}
