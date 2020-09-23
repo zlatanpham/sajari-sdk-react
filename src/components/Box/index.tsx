@@ -7,7 +7,7 @@ interface BoxProps {
 }
 
 const BoxComponent = (
-  props: PropsWithAs<BoxProps, "div">,
+  props: PropsWithAs<BoxProps, any>,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const { as: Type = "div", children, ...rest } = props;
@@ -18,6 +18,6 @@ const BoxComponent = (
   );
 };
 
-const Box = forwardRefWithAs<BoxProps, "div">(BoxComponent);
+const Box = forwardRefWithAs<BoxProps, any>(BoxComponent);
 
 export default Box;
