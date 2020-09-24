@@ -7,7 +7,7 @@ export type PropsWithAs<Props = {}, Type extends As = As> = Props &
     as?: Type;
   };
 
-export interface ComponentWithAs<Props, DefaultType extends As> {
+export interface ComponentWithAs<Props, DefaultType extends As = As> {
   <Type extends As>(
     props: PropsWithAs<Props, Type> & { as: Type }
   ): JSX.Element;
