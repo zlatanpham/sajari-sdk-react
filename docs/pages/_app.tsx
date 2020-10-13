@@ -6,12 +6,14 @@ import { DefaultSeo } from 'next-seo';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ContextProvider } from '@sajari/react-sdk';
+import { Provider, Pipeline, Values, useContext } from '@sajari/react-hooks';
 
 import MDXComponents from '../components/MDXComponents';
 import MobileNav from '../components/Navigation/MobileNav';
 import SideNav from '../components/Navigation/SideNav';
 import TopNavItem from '../components/Navigation/TopNavItem';
 import seo from '../seo.config';
+import { useEffect } from 'react';
 
 const title = 'React SDK';
 
@@ -67,6 +69,27 @@ const Layout = (props: FlexProps) => {
   );
 };
 
+const TestDataCall = () => {
+  const { search, ...rest } = useContext();
+  console.log(search);
+  console.log(rest);
+  useEffect(() => {
+    search.search('hello');
+  });
+  return null;
+};
+
+const pipeline = new Pipeline(
+  {
+    project: '1594153711901724220',
+    collection: 'bestbuy',
+    endpoint: '//jsonapi-us-valkyrie.sajari.net',
+  },
+  'query',
+);
+
+const values = new Values({ q: '' });
+
 const App = ({ Component, pageProps }: AppProps) => (
   <>
     <MDXProvider components={MDXComponents}>
@@ -79,9 +102,12 @@ const App = ({ Component, pageProps }: AppProps) => (
       </Head>
       <DefaultSeo {...seo} />
       <Layout>
-        <ContextProvider>
-          <Component {...pageProps} />
-        </ContextProvider>
+        <Provider search={{ pipeline, values }}>
+          <ContextProvider>
+            <TestDataCall />
+            <Component {...pageProps} />
+          </ContextProvider>
+        </Provider>
       </Layout>
     </MDXProvider>
   </>

@@ -8,7 +8,9 @@ export default function useVoiceInput(onResult?: (r: string) => void) {
   const recognitionRef = useRef<SpeechRecognition>();
 
   useEffect(() => {
-    setSupported(window.hasOwnProperty('webkitSpeechRecognition'));
+    if (typeof window !== 'undefined') {
+      setSupported(window.hasOwnProperty('webkitSpeechRecognition'));
+    }
   }, []);
 
   useEffect(() => {
