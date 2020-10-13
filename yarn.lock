@@ -2840,6 +2840,11 @@
     toasted-notes "^3.2.0"
     typescript "^4.0.3"
 
+"@sajari/sdk-js@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@sajari/sdk-js/-/sdk-js-1.0.10.tgz#8aab7b5112d0724229f7f430bc1bcb6aa890c55a"
+  integrity sha512-9r5w5tmM3T+SBKMerzYP4VFs4Q5POkzYpO9Odtqcledu/9HeCVCW04fIhyw8w/WzQeEHaLob2El3g0Yn1XnOqw==
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"

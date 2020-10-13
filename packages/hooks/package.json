@@ -17,7 +17,9 @@
     "dist"
   ],
   "dependencies": {
-    "tslib": "^2.0.0"
+    "@sajari/sdk-js": "^1.0.10",
+    "tslib": "^2.0.0",
+    "sajari-react-sdk-utils": "^0.0.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",
