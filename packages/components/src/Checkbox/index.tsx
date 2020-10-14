@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import { useId } from '@reach/auto-id';
 import React from 'react';
-import tw from 'twin.macro';
+import { tw } from 'sajari-react-sdk-utils';
 import useInputStyle, { UseInputStyleProps } from '../hooks/use-input-styles';
 import { __DEV__ } from '../utils/assertion';
 import Label from '../Label';

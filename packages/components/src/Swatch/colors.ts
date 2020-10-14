@@ -1,4 +1,4 @@
-import { theme } from 'twin.macro';
+import { theme } from 'sajari-react-sdk-utils';
 import { ColorProps } from './types';
 
 export const colors: ColorProps[] = [

@@ -1,6 +1,7 @@
 import React from 'react';
 
 interface Props {
+  htmlFor: string;
   /** Visually hidden label */
   visuallyHidden?: boolean;
 }

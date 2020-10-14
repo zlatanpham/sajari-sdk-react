@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import tw, { TwStyle } from 'twin.macro';
+import { tw, TwStyle } from 'sajari-react-sdk-utils';
 import { useTheme } from '../styles/theming';
 
 export interface UseInputStyleProps {

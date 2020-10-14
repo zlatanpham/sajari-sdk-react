@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const tailwindUI = require('@tailwindcss/ui');
 
 module.exports = {

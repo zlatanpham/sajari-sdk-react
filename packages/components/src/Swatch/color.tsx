@@ -5,13 +5,14 @@ import { useFocusRing } from '@react-aria/focus';
 import { useSwitch } from '@react-aria/switch';
 import { useToggleState } from '@react-stately/toggle';
 import React from 'react';
-import tw, { styled, ThemeStyle } from 'twin.macro';
+import { tw, ThemeStyle } from 'sajari-react-sdk-utils';
 import { Check } from '../assets/icons';
 import { __DEV__ } from '../utils/assertion';
 import Box from '../Box';
 import { colors } from './colors';
 import { useSwatch } from './context';
 import { ColorProps } from './types';
+import styled from '../styles/styled';
 
 const StyledLabel = styled.label<{
   textColor: string | ThemeStyle;

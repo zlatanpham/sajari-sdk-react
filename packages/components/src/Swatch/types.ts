@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeStyle } from 'twin.macro';
+import { ThemeStyle } from 'sajari-react-sdk-utils';
 
 export interface ColorProps {
   /** The identifier of the color */

@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import tw from 'twin.macro';
+import { tw } from 'sajari-react-sdk-utils';
 import { __DEV__ } from '../utils/assertion';
 import Box from '../Box';
 import { Color } from './color';

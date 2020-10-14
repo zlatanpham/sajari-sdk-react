@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import tw, { TwStyle } from 'twin.macro';
+import { tw, TwStyle } from 'sajari-react-sdk-utils';
 
 export type Spacing = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
 

@@ -1,5 +1,5 @@
 import { css, SerializedStyles } from '@emotion/core';
-import tw from 'twin.macro';
+import { tw } from 'sajari-react-sdk-utils';
 import { PoweredByProps } from './types';
 
 type Styles = {

@@ -23,7 +23,6 @@
   "peerDependencies": {
     "@emotion/core": "> 10",
     "@emotion/styled": "> 10",
-    "@tailwindcss/ui": "^0.6.2",
     "emotion-theming": "> 10",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
@@ -31,9 +30,7 @@
   "devDependencies": {
     "@emotion/core": "^10.0.35",
     "@emotion/styled": "^10.0.27",
-    "emotion-theming": "^10.0.27",
-    "tailwindcss": "^1.9.0",
-    "twin.macro": "^1.10.0"
+    "emotion-theming": "^10.0.27"
   },
   "dependencies": {
     "@reach/auto-id": "^0.11.2",
