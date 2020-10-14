@@ -27,6 +27,7 @@
   "dependencies": {
     "@sajari/react-hooks": "^0.0.0",
     "@sajari/react-components": "^0.0.0",
+    "sajari-react-sdk-styles": "^0.0.0",
     "tslib": "^2.0.0"
   },
   "publishConfig": {
