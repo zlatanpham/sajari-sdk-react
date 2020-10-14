@@ -4,7 +4,6 @@ export { default as Checkbox } from './Checkbox';
 export { default as CheckboxGroup } from './CheckboxGroup';
 export { default as Image } from './Image';
 export { default as Pagination } from './Pagination';
-export { default as PoweredBy } from './PoweredBy';
 export { default as Radio } from './Radio';
 export { default as RadioGroup } from './RadioGroup';
 export { default as Rating } from './Rating';

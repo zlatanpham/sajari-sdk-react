@@ -21,7 +21,6 @@
     "dist"
   ],
   "peerDependencies": {
-    "@tailwindcss/ui": "^0.6.2",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   },
