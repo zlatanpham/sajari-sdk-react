@@ -1,9 +1,3 @@
-import { CallbackFn, Listener, ListenerMap } from '../listener';
-
-import { Pipeline } from '../pipeline';
-import { Response } from '../response';
-import { Tracking } from '../tracking';
-
 import {
   EVENT_ANALYTICS_BODY_RESET,
   EVENT_ANALYTICS_PAGE_CLOSED,
@@ -12,6 +6,10 @@ import {
   EVENT_RESULT_CLICKED,
   EVENT_TRACKING_RESET,
 } from '../../events';
+import { CallbackFn, Listener, ListenerMap } from '../listener';
+import { Pipeline } from '../pipeline';
+import { Response } from '../response';
+import { Tracking } from '../tracking';
 
 const events = [EVENT_ANALYTICS_PAGE_CLOSED, EVENT_ANALYTICS_BODY_RESET, EVENT_ANALYTICS_RESULT_CLICKED];
 
@@ -21,14 +19,21 @@ const events = [EVENT_ANALYTICS_PAGE_CLOSED, EVENT_ANALYTICS_BODY_RESET, EVENT_A
  */
 export class Analytics {
   private enabled: boolean;
+
   private body: string;
+
   private pipeline: Pipeline;
+
   private tracking: Tracking;
+
   private listeners: ListenerMap;
 
   private longestNonAutocompletedBody: string;
+
   private longestAutocompletedBody: string;
+
   private bodyLabel: string;
+
   private bodyAutocompletedLabel: string;
 
   /**

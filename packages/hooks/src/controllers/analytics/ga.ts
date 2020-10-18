@@ -1,7 +1,6 @@
+import { EVENT_ANALYTICS_BODY_RESET, EVENT_ANALYTICS_PAGE_CLOSED, EVENT_ANALYTICS_RESULT_CLICKED } from '../../events';
 import { UnlistenFn } from '../listener';
 import { Analytics } from './analytics';
-
-import { EVENT_ANALYTICS_BODY_RESET, EVENT_ANALYTICS_PAGE_CLOSED, EVENT_ANALYTICS_RESULT_CLICKED } from '../../events';
 
 enum GoogleAnalyticsObjects {
   UniversalAnalytics = '_ua',
@@ -9,8 +8,11 @@ enum GoogleAnalyticsObjects {
   GTag = 'gtag',
 }
 
+const isFunction = (x: any) => typeof x === 'function';
+
 export class GoogleAnalytics {
   private id: string | null;
+
   private param: string;
 
   private unregisterFunctions: UnlistenFn[] = [];
@@ -109,7 +111,7 @@ const url = {
    */
   encodeUriArgs(args: { [k: string]: string }) {
     const queryParts: string[] = [];
-    Object.keys(args).forEach((key) => queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key])));
+    Object.keys(args).forEach((key) => queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(args[key])}`));
     return queryParts.join('&');
   },
 
@@ -132,20 +134,17 @@ const url = {
   augmentUri(uri: string, args: { [k: string]: string }) {
     const m = /^([^?]+)\?(.+)+$/.exec(uri);
     if (m) {
-      return m[1] + '?' + this.mergeQueryStr(m[2], args);
-    } else {
-      return uri + '?' + this.encodeUriArgs(args);
+      return `${m[1]}?${this.mergeQueryStr(m[2], args)}`;
     }
+    return `${uri}?${this.encodeUriArgs(args)}`;
   },
 
   /**
    * Get a parameter from the URL
    */
   getURLParameter(name: string) {
-    const value = new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [undefined, ''];
+    const value = new RegExp(`[?|&]${name}=` + '([^&;]+?)(&|#|;|$)').exec(location.search) || [undefined, ''];
 
     return decodeURIComponent((value[1] as string).replace(/\+/g, '%20')) || null;
   },
 };
-
-const isFunction = (x: any) => typeof x === 'function';

@@ -1,11 +1,23 @@
-import { AggregateResponse, CountResponse } from '@sajari/sdk-js';
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
+import { Aggregates, CountAggregate } from '@sajari/sdk-js';
+
 import { EVENT_RESPONSE_UPDATED } from '../events';
 import { Filter } from './filter';
 import { Pipeline } from './pipeline';
 import { Values } from './values';
 
+export function filterOptValue(name: string, field: string, type = '~', listField = false) {
+  let item = `"${name}"`;
+  if (listField) {
+    item = `["${name}"]`;
+  }
+  return `${field}${type}${item}`;
+}
+
 export class CountAggregateFilter extends Filter {
   private _field: string = '';
+
   private _counts: Array<{ name: string; count: number }> = [];
 
   constructor(field: string, pipeline: Pipeline, values: Values, multi = false, type = '~', listField = false) {
@@ -44,12 +56,14 @@ export class CountAggregateFilter extends Filter {
     }
   }
 
-  private _getCounts(aggregates: AggregateResponse) {
+  private _getCounts(aggregates: Aggregates) {
     if (!aggregates || !aggregates[`count.${this._field}`]) {
       return [];
     }
 
-    const counts = aggregates[`count.${this._field}`] as CountResponse;
+    // FIXME:
+    // @ts-ignore
+    const counts = aggregates[`count.${this._field}`] as CountAggregate;
     return Object.keys(counts)
       .map((key) => {
         return { name: key, count: counts[key] };
@@ -76,12 +90,4 @@ export class CountAggregateFilter extends Filter {
     }, {} as { [key: string]: string | null });
     this.setOptions(clear);
   }
-}
-
-export function filterOptValue(name: string, field: string, type = '~', listField = false) {
-  let item = `"${name}"`;
-  if (listField) {
-    item = `["${name}"]`;
-  }
-  return `${field}${type}${item}`;
 }

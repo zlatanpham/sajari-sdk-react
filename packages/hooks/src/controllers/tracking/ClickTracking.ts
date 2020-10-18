@@ -5,7 +5,9 @@ import { getTrackingData } from './utils';
 
 export class ClickTracking extends Tracking {
   private field: string;
+
   private qParam: string;
+
   private prevQ: string;
 
   /**

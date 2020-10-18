@@ -1,12 +1,24 @@
+/* eslint-disable no-underscore-dangle */
 import { Filter } from './filter';
+
+export function getFilterQuery(range: Range, limit: Range, field: string) {
+  if (range[1] === limit[1] && range[0] === limit[0]) {
+    return '';
+  }
+  return `(${field} >= ${range[0]} AND ${field} <= ${range[1]})`;
+}
 
 export type Range = [number, number];
 
 export class RangeFilter extends Filter {
   protected _field = '';
+
   protected _range = [0, 0] as Range;
+
   protected _limit = [0, 0] as Range; // [min, max]
+
   protected _current = '';
+
   protected _filter = '';
 
   constructor(field: string, limit: Range) {
@@ -18,7 +30,9 @@ export class RangeFilter extends Filter {
   }
 
   public range = () => this._range;
+
   public filter = () => this._filter;
+
   public limit = () => this._limit;
 
   public get = () => (this._current === '' ? [] : [this._current]);
@@ -45,11 +59,4 @@ export class RangeFilter extends Filter {
     this._filter = '';
     this._emitSelectionUpdated();
   };
-}
-
-export function getFilterQuery(range: Range, limit: Range, field: string) {
-  if (range[1] === limit[1] && range[0] === limit[0]) {
-    return '';
-  }
-  return `(${field} >= ${range[0]} AND ${field} <= ${range[1]})`;
 }

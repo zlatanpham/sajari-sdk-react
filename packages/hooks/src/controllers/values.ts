@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { EVENT_VALUES_UPDATED } from '../events';
 import { Listener, ListenerMap } from './listener';
 

@@ -1,13 +1,17 @@
-import { Client, Pipeline as SDKPipeline, RequestError, Response as SDKResponse, withEndpoint } from '@sajari/sdk-js';
+/* eslint-disable max-classes-per-file */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-underscore-dangle */
+import { Client } from '@sajari/sdk-js';
 
 import { EVENT_RESPONSE_UPDATED, EVENT_RESULT_CLICKED, EVENT_SEARCH_SENT } from '../events';
-
 import { Analytics, GoogleAnalytics } from './analytics';
 import { CallbackFn, Listener, ListenerMap } from './listener';
 import { Response } from './response';
 import { ClickTracking, NoTracking } from './tracking';
 
 const events = [EVENT_SEARCH_SENT, EVENT_RESPONSE_UPDATED, EVENT_RESULT_CLICKED];
+
+type QueryPipeline = ReturnType<Client['pipeline']>;
 
 export class Pipeline {
   public config: {
@@ -16,13 +20,20 @@ export class Pipeline {
     endpoint?: string;
   };
 
-  private pipeline: SDKPipeline;
+  private pipeline: QueryPipeline;
+
   private name: string;
+
   private version?: string;
+
   private tracking: ClickTracking | NoTracking;
+
   private listeners: ListenerMap;
+
   private searchCount: number;
+
   private response: Response = new Response(null);
+
   private analytics: Analytics;
 
   /**
@@ -44,9 +55,12 @@ export class Pipeline {
   ) {
     const { project, collection, endpoint } = config;
     this.config = config;
-    const opts = endpoint !== undefined ? [withEndpoint(endpoint)] : [];
+    // TODO: v0.x import { withEndpoint } from '@sajari/sdk-js';
+    // need to check why the method has been removed and what is the alternative
+    // const opts = endpoint !== undefined ? [withEndpoint(endpoint)] : [];
+    // const opts = [];
 
-    let p: { name?: string; version?: string } = {
+    const p: { name?: string; version?: string } = {
       name: undefined,
       version: undefined,
     };
@@ -57,10 +71,12 @@ export class Pipeline {
       p.version = name.version;
     }
 
-    this.pipeline = new Client(project, collection, opts).pipeline(p.name as string, p.version);
+    // this.pipeline = new Client(project, collection, opts).pipeline(p.name as string, p.version);
+    this.pipeline = new Client(project, collection, endpoint).pipeline(p.name as string, p.version);
     this.name = p.name as string;
     this.version = p.version;
-    this.tracking = tracking;
+    // FIXME: this is causing a bad request due to no defined clientTracking
+    // this.tracking = tracking;
     this.listeners = new Map([
       [EVENT_SEARCH_SENT, new Listener()],
       [EVENT_RESPONSE_UPDATED, new Listener()],
@@ -68,11 +84,13 @@ export class Pipeline {
     ]);
     this.searchCount = 0;
     this.response = new Response(null);
-    this.analytics = new Analytics(this, this.tracking);
-    analyticsAdapters.forEach((Adapter) => {
-      // tslint:disable-next-line
-      new Adapter(this.analytics);
-    });
+
+    // FIXME: this is causing a bad request due to no defined clientTracking
+    // this.analytics = new Analytics(this, this.tracking);
+    // analyticsAdapters.forEach((Adapter) => {
+    //   // eslint-disable-next-line no-new
+    //   new Adapter(this.analytics);
+    // });
   }
 
   /**
@@ -126,28 +144,32 @@ export class Pipeline {
     this.searchCount++;
     const currentSearch = this.searchCount;
 
-    this.pipeline.search(
-      values,
-      this.tracking,
-      (error: RequestError | null, response: SDKResponse | undefined, responseValues = {}) => {
+    this.pipeline
+      // TODO: check why tracking type doesn't match
+      // @ts-ignore
+      .search(values, this.tracking)
+      .then(([response, responseValues]) => {
         if (currentSearch < this.searchCount) {
           return;
         }
 
         this.response = new Response(
-          error ? error : null,
+          null,
           new Map(Object.entries(values)),
-          response !== undefined ? new Map(Object.entries(response)) : undefined,
+          new Map(Object.entries(response)),
           new Map(Object.entries(responseValues)),
         );
-        // tslint:disable-next-line no-console
-        if (error && console && console.error) {
-          // tslint:disable-next-line no-console
-          console.error(error);
-        }
+
         this._emitResponseUpdated(this.response);
-      },
-    );
+      })
+      .catch((error) => {
+        console.error(error);
+        if (currentSearch < this.searchCount) {
+          return;
+        }
+
+        this.response = new Response(null, new Map(Object.entries(values)), undefined, undefined);
+      });
     this._emitSearchSent(values);
   }
 

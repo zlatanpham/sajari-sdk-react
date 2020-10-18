@@ -1,4 +1,8 @@
-import { AggregateResponse } from '@sajari/sdk-js';
+/* eslint-disable import/named */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-underscore-dangle */
+import { Aggregates } from '@sajari/sdk-js';
+
 import { EVENT_RESPONSE_UPDATED, EVENT_SEARCH_SENT } from '../events';
 import { Pipeline } from './pipeline';
 import { Range, RangeFilter } from './rangeFilter';
@@ -6,9 +10,14 @@ import { Values } from './values';
 
 export type LimitUpdateListener = ({ bounce, range }: { bounce: Range; range: Range }) => void;
 
+const isEmpty = (aggregates: Aggregates, field: string) =>
+  !aggregates && (!aggregates[`max.${field}`] || !aggregates[`min.${field}`]);
+
 export class RangeAggregateFilter extends RangeFilter {
   private _prevInput = '';
+
   private _count = '';
+
   private _limitChangeListeners: LimitUpdateListener[] = [];
 
   constructor(field: string, pipeline: Pipeline, values: Values) {
@@ -57,12 +66,15 @@ export class RangeAggregateFilter extends RangeFilter {
     this._limitChangeListeners.forEach((func) => func({ bounce, range }));
   }
 
-  private _getLimit(aggregates: AggregateResponse): Range {
+  private _getLimit(aggregates: Aggregates): Range {
     if (isEmpty(aggregates, this._field)) {
       return this._limit.map((r) => r) as Range;
     }
 
+    // TODO: need to fix this because of data shape from response change
+    // @ts-ignore
     const min = (aggregates[`min.${this._field}`] as number) || 0;
+    // @ts-ignore
     const max = (aggregates[`max.${this._field}`] as number) || 0;
 
     return [min, max];
@@ -82,5 +94,3 @@ export class RangeAggregateFilter extends RangeFilter {
     }
   }
 }
-const isEmpty = (aggregates: AggregateResponse, field: string) =>
-  !aggregates && (!aggregates[`max.${field}`] || !aggregates[`min.${field}`]);
