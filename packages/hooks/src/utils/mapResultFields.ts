@@ -2,12 +2,16 @@ import { Result } from '@sajari/sdk-js';
 
 import { Fields } from '../SearchContextProvider';
 
-function mapFields<T = Record<string, string | string[]>>(values: T, fields: Fields = {}) {
+export function mapFields<T = Record<string, string | string[]>>(values: T, fields: Fields = {}) {
   const mappingFields = { ...values };
 
   // eslint-disable-next-line no-restricted-syntax
   for (const key of Object.keys(fields)) {
-    mappingFields[key] = values[fields[key]];
+    const value = values[fields[key]];
+    if (value) {
+      mappingFields[key] = value;
+      delete mappingFields[fields[key]];
+    }
   }
 
   return mappingFields as Record<keyof Fields, string | string[]> & T;
