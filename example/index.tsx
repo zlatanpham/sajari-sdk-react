@@ -2,22 +2,40 @@ import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ContextProvider } from '@sajari/react-sdk';
-import { Provider, Pipeline, Values, useContext } from '@sajari/react-hooks';
+import { SearchContextProvider, Pipeline, Values, useSearchContext } from '@sajari/react-hooks';
 
 const SearchPlayground = () => {
-  const {
-    search: { search, response },
-  } = useContext();
-
-  console.log(response);
+  const { search, results } = useSearchContext<{ id: string; free_shipping: string }>();
 
   return (
-    <input
-      type="text"
-      onChange={(e) => {
-        search(e.target.value, true);
-      }}
-    />
+    <>
+      <input
+        type="text"
+        onChange={(e) => {
+          search(e.target.value, true);
+        }}
+      />
+      {results?.map(({ values: { id, free_shipping, category, description, price, rating, title } }) => (
+        <div key={id}>
+          <h3>{title}</h3>
+          <p>{description}</p>
+          <ul>
+            <li>
+              <b>Category</b>: {category}
+            </li>
+            <li>
+              <b>Price</b>: ${price}
+            </li>
+            <li>
+              <b>Rating</b>: {rating}
+            </li>
+            <li>
+              <b>Freeship</b>: {free_shipping ? 'yes' : 'no'}
+            </li>
+          </ul>
+        </div>
+      ))}
+    </>
   );
 };
 
@@ -34,11 +52,11 @@ const values = new Values({ q: '' });
 
 const App = () => {
   return (
-    <Provider search={{ pipeline, values }}>
+    <SearchContextProvider search={{ pipeline, values }} fields={{ category: 'brand', title: 'name' }}>
       <ContextProvider>
         <SearchPlayground />
       </ContextProvider>
-    </Provider>
+    </SearchContextProvider>
   );
 };
 

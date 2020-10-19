@@ -1,4 +1,4 @@
 export { default as useQuery } from './use-query';
-export { default as Provider } from './ContextProvider';
-export { useContext } from './ContextProvider';
-export { Values, Pipeline } from './ContextProvider/controllers';
+export { default as SearchContextProvider } from './SearchContextProvider';
+export { default as useSearchContext } from './useSearchContext';
+export { Values, Pipeline } from './SearchContextProvider/controllers';

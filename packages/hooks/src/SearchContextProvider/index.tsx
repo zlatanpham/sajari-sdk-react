@@ -104,11 +104,19 @@ export interface ProviderPipelineState {
   suggestions: string[];
 }
 
+export interface Fields {
+  title?: string;
+  description?: string;
+  price?: string;
+  rating?: string;
+  category?: string;
+}
+
 export interface PipelineProviderProps {
   search: ProviderPipelineConfig;
   instant?: ProviderPipelineConfig;
-
   searchOnLoad?: boolean;
+  fields?: Fields;
 }
 
 export interface PipelineProviderState {
@@ -122,9 +130,10 @@ export interface Context {
 
   resultClicked: ResultClickedFn;
   paginate: PaginateFn;
+  fields: Fields;
 }
 
-const [ContextProvider, useContext] = createContext<Context>({
+const [Provider, useContext] = createContext<Context>({
   strict: true,
   name: 'PipelineContext',
 });
@@ -145,7 +154,13 @@ const defaultState: State = {
   config: defaultConfig,
 };
 
-const Provider: React.FC<PipelineProviderProps> = ({ children, search, instant: instantProp, searchOnLoad }) => {
+const SearchContextProvider: React.FC<PipelineProviderProps> = ({
+  children,
+  search,
+  instant: instantProp,
+  searchOnLoad,
+  fields,
+}) => {
   const [searchState, setSearchState] = useState(defaultState);
   const [instantState, setInstantState] = useState(defaultState);
   const instant = useRef(instantProp);
@@ -284,12 +299,11 @@ const Provider: React.FC<PipelineProviderProps> = ({ children, search, instant: 
       },
       resultClicked: handleResultClicked,
       paginate: handlePaginate,
+      fields,
     } as Context);
 
-  return (
-    <ContextProvider value={getContext({ instant: instantState, search: searchState })}>{children}</ContextProvider>
-  );
+  return <Provider value={getContext({ instant: instantState, search: searchState })}>{children}</Provider>;
 };
 
-export default Provider;
+export default SearchContextProvider;
 export { useContext };
