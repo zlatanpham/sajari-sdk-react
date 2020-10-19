@@ -57,7 +57,7 @@ export class Pipeline {
     const { project, collection, endpoint } = config;
     this.config = config;
     // TODO: v0.x import { withEndpoint } from '@sajari/sdk-js';
-    // need to check why the method has been removed and what is the alternative
+    // need to check with Ben/look up v0.x code to see why the method has been removed and what is the alternative
     // const opts = endpoint !== undefined ? [withEndpoint(endpoint)] : [];
     // const opts = [];
 

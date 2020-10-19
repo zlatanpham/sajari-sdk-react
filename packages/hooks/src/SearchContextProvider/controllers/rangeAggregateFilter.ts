@@ -72,6 +72,7 @@ export class RangeAggregateFilter extends RangeFilter {
     }
 
     // TODO: need to fix this because of data shape from response change
+    // may be best to do it when we are doing useFilter hook
     // @ts-ignore
     const min = (aggregates[`min.${this._field}`] as number) || 0;
     // @ts-ignore

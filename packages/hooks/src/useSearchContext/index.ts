@@ -18,7 +18,6 @@ function useSearchContext<T = Record<string, string | string[]>>() {
   const totalPages = Math.ceil(totalResults / resultsPerPage);
   const mapResponse = mapToObject(response?.getResponse() as Map<string, any> | undefined);
   const reqResults = response?.getResults();
-  console.log(reqResults);
 
   return {
     page,
