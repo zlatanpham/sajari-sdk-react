@@ -61,7 +61,7 @@ export class CountAggregateFilter extends Filter {
       return [];
     }
 
-    // FIXME:
+    // FIXME: mapping object after being changed in types
     // @ts-ignore
     const counts = aggregates[`count.${this._field}`] as CountAggregate;
     return Object.keys(counts)

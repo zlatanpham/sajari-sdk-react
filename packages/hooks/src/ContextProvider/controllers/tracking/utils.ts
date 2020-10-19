@@ -1,4 +1,3 @@
-// @ts-ignore: module missing defintion file
 import Cookies from 'js-cookie';
 
 export const getTrackingData = () => {

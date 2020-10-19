@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { EVENT_ANALYTICS_BODY_RESET, EVENT_ANALYTICS_PAGE_CLOSED, EVENT_ANALYTICS_RESULT_CLICKED } from '../../events';
 import { UnlistenFn } from '../listener';
 import { Analytics } from './analytics';
@@ -9,6 +10,68 @@ enum GoogleAnalyticsObjects {
 }
 
 const isFunction = (x: any) => typeof x === 'function';
+
+const url = {
+  /**
+   * Convert a query string in to an object
+   */
+  decodeUriArgs(queryStr: string) {
+    const args = {} as { [k: string]: string };
+    const a = queryStr.split('&');
+    for (const i in a) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (a.hasOwnProperty(i)) {
+        const b = a[i].split('=');
+        args[decodeURIComponent(b[0])] = decodeURIComponent(b[1]);
+      }
+    }
+    return args;
+  },
+
+  /**
+   * Convert an arguments object in to a query string
+   */
+  encodeUriArgs(args: { [k: string]: string }) {
+    const queryParts: string[] = [];
+    Object.keys(args).forEach((key) => queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(args[key])}`));
+    return queryParts.join('&');
+  },
+
+  /**
+   * Merges query strings or objects into a single query string. Accepts a variable number of query string/objects
+   * to merge. The latter overrides the former.
+   */
+  mergeQueryStr(first: string | { [k: string]: string }, ...rest: Array<string | { [k: string]: string }>) {
+    const args = typeof first === 'string' ? this.decodeUriArgs(first) : first;
+    rest.forEach((arg) => {
+      const next = typeof arg === 'string' ? this.decodeUriArgs(arg) : arg;
+      Object.keys(next).forEach((prop) => {
+        args[prop] = next[prop];
+      });
+    });
+    return this.encodeUriArgs(args);
+  },
+
+  /**
+   * Takes an existing URL and merges additional data into the query string
+   */
+  augmentUri(uri: string, args: { [k: string]: string }) {
+    const m = /^([^?]+)\?(.+)+$/.exec(uri);
+    if (m) {
+      return `${m[1]}?${this.mergeQueryStr(m[2], args)}`;
+    }
+    return `${uri}?${this.encodeUriArgs(args)}`;
+  },
+
+  /**
+   * Get a parameter from the URL
+   */
+  getURLParameter(name: string) {
+    const value = new RegExp(`[?|&]${name}=([^&;]+?)(&|#|;|$)`).exec(window.location.search) || [undefined, ''];
+
+    return decodeURIComponent((value[1] as string).replace(/\+/g, '%20')) || null;
+  },
+};
 
 export class GoogleAnalytics {
   private id: string | null;
@@ -60,7 +123,7 @@ export class GoogleAnalytics {
       // Merge the body in with the existing query params in the url
       const pageAddress = url.augmentUri(
         // Take only the portion of the url following the domain
-        location.href.substring(location.origin.length),
+        window.location.href.substring(window.location.origin.length),
         { [this.param]: body },
       );
 
@@ -89,62 +152,3 @@ export class GoogleAnalytics {
    */
   public onPageClose = (body: string) => this.sendGAPageView(body);
 }
-
-const url = {
-  /**
-   * Convert a query string in to an object
-   */
-  decodeUriArgs(queryStr: string) {
-    const args = {} as { [k: string]: string };
-    const a = queryStr.split('&');
-    for (const i in a) {
-      if (a.hasOwnProperty(i)) {
-        const b = a[i].split('=');
-        args[decodeURIComponent(b[0])] = decodeURIComponent(b[1]);
-      }
-    }
-    return args;
-  },
-
-  /**
-   * Convert an arguments object in to a query string
-   */
-  encodeUriArgs(args: { [k: string]: string }) {
-    const queryParts: string[] = [];
-    Object.keys(args).forEach((key) => queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(args[key])}`));
-    return queryParts.join('&');
-  },
-
-  /**
-   * Merges query strings or objects into a single query string. Accepts a variable number of query string/objects
-   * to merge. The latter overrides the former.
-   */
-  mergeQueryStr(first: string | { [k: string]: string }, ...rest: Array<string | { [k: string]: string }>) {
-    const args = typeof first === 'string' ? this.decodeUriArgs(first) : first;
-    rest.forEach((arg) => {
-      const next = typeof arg === 'string' ? this.decodeUriArgs(arg) : arg;
-      Object.keys(next).forEach((prop) => (args[prop] = next[prop]));
-    });
-    return this.encodeUriArgs(args);
-  },
-
-  /**
-   * Takes an existing URL and merges additional data into the query string
-   */
-  augmentUri(uri: string, args: { [k: string]: string }) {
-    const m = /^([^?]+)\?(.+)+$/.exec(uri);
-    if (m) {
-      return `${m[1]}?${this.mergeQueryStr(m[2], args)}`;
-    }
-    return `${uri}?${this.encodeUriArgs(args)}`;
-  },
-
-  /**
-   * Get a parameter from the URL
-   */
-  getURLParameter(name: string) {
-    const value = new RegExp(`[?|&]${name}=` + '([^&;]+?)(&|#|;|$)').exec(location.search) || [undefined, ''];
-
-    return decodeURIComponent((value[1] as string).replace(/\+/g, '%20')) || null;
-  },
-};

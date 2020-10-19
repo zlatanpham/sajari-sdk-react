@@ -4,14 +4,21 @@ import * as ReactDOM from 'react-dom';
 import { ContextProvider } from '@sajari/react-sdk';
 import { Provider, Pipeline, Values, useContext } from '@sajari/react-hooks';
 
-const TestDataCall = () => {
-  const { search, ...rest } = useContext();
-  console.log(search);
-  console.log(rest);
-  React.useEffect(() => {
-    search.search('hello', true);
-  });
-  return null;
+const SearchPlayground = () => {
+  const {
+    search: { search, response },
+  } = useContext();
+
+  console.log(response);
+
+  return (
+    <input
+      type="text"
+      onChange={(e) => {
+        search(e.target.value, true);
+      }}
+    />
+  );
 };
 
 const pipeline = new Pipeline(
@@ -21,7 +28,6 @@ const pipeline = new Pipeline(
     endpoint: '//jsonapi-us-valkyrie.sajari.net',
   },
   'query',
-  undefined,
 );
 
 const values = new Values({ q: '' });
@@ -30,7 +36,7 @@ const App = () => {
   return (
     <Provider search={{ pipeline, values }}>
       <ContextProvider>
-        <TestDataCall />
+        <SearchPlayground />
       </ContextProvider>
     </Provider>
   );

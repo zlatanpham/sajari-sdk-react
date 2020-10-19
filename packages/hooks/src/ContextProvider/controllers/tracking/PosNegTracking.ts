@@ -1,6 +1,6 @@
 import { DefaultSession, Session, TrackingType } from '@sajari/sdk-js';
 
-import { Tracking } from './Tracking';
+import { Tracking, TrackingValues } from './Tracking';
 import { getTrackingData } from './utils';
 
 export class PosNegTracking extends Tracking {
@@ -16,9 +16,10 @@ export class PosNegTracking extends Tracking {
    * Reset the tracking.
    * @param values Key-value pair parameters to use in the pipeline.
    */
-  public reset(values?: { [k: string]: string }) {
+  public reset(values?: TrackingValues) {
     (this.clientTracking as Session).reset();
     if (values !== undefined) {
+      // eslint-disable-next-line no-underscore-dangle
       this._emitTrackingReset(values);
     }
   }
@@ -27,7 +28,7 @@ export class PosNegTracking extends Tracking {
    * Construct a tracking session to be used in a search.
    * @param values Key-value pair parameters to use in the pipeline.
    */
-  public next(values: { [k: string]: string }) {
+  public next(values: TrackingValues) {
     if (this.clientTracking === null) {
       throw new Error('clientTracking is null');
     }

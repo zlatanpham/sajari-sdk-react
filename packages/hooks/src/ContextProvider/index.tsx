@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-shadow */
+import React, { useEffect, useRef, useState } from 'react';
 import { createContext } from 'sajari-react-sdk-utils';
 
-import { Config, defaultConfig } from '../context/config';
-import { Pipeline, Response, Values } from '../controllers';
+import { Config, defaultConfig } from './config';
+import { NoTracking, Pipeline, Response, Values } from './controllers';
+import { UnlistenFn } from './controllers/listener';
+import { EVENT_RESPONSE_UPDATED, EVENT_VALUES_UPDATED } from './events';
 
 export type SearchFn = (query: string, override: boolean) => void;
 export type ClearFn = (values?: { [k: string]: string | undefined }) => void;
@@ -20,10 +23,11 @@ function debounce<F extends Procedure>(
 ): F {
   let timeoutId: number | undefined;
 
+  // eslint-disable-next-line func-names
   return function (this: any, ...args: any[]) {
     const context = this;
 
-    const doLater = function () {
+    const doLater = () => {
       timeoutId = undefined;
       if (!options.isImmediate) {
         func.apply(context, args);
@@ -44,6 +48,37 @@ function debounce<F extends Procedure>(
     }
   } as any;
 }
+
+const updateState = (query: string, responseValues: Map<string, string> | undefined, config: Config) => {
+  const completion = query && responseValues ? responseValues.get(config.qParam) || '' : '';
+  let suggestions: string[] = [];
+  if (responseValues) {
+    suggestions = (responseValues.get(config.qSuggestionsParam) || '')
+      .split(',')
+      .filter((s) => s.length > 0)
+      .slice(0, config.maxSuggestions);
+  }
+
+  return {
+    completion,
+    query,
+    suggestions,
+  };
+};
+
+const responseUpdatedListener = (values: Values, config: Config, response: Response) => {
+  const query = values.get()[config.qParam] || '';
+  const responseValues = response.getValues();
+
+  return updateState(query, responseValues, config);
+};
+
+const valuesUpdatedListener = (values: Values, pipeline: Pipeline, config: Config) => {
+  const query = values.get()[config.qParam] || '';
+  const responseValues = pipeline.getResponse().getValues();
+
+  return updateState(query, responseValues, config);
+};
 
 export interface PipelineContextState {
   response: Response | null;
@@ -110,9 +145,10 @@ const defaultState: State = {
   config: defaultConfig,
 };
 
-const Provider: React.FC<PipelineProviderProps> = ({ children, search, instant, searchOnLoad }) => {
+const Provider: React.FC<PipelineProviderProps> = ({ children, search, instant: instantProp, searchOnLoad }) => {
   const [searchState, setSearchState] = useState(defaultState);
   const [instantState, setInstantState] = useState(defaultState);
+  const instant = useRef(instantProp);
   const response = search.pipeline.getResponse();
 
   useEffect(() => {
@@ -128,6 +164,66 @@ const Provider: React.FC<PipelineProviderProps> = ({ children, search, instant, 
       ...state,
       config: { ...defaultConfig, ...search.config },
     }));
+
+    const unregisterFunctions: UnlistenFn[] = [];
+
+    unregisterFunctions.push(
+      search.pipeline.listen(EVENT_RESPONSE_UPDATED, (response: Response) =>
+        setSearchState((prevState) => ({
+          ...prevState,
+          response,
+          ...responseUpdatedListener(search.values, prevState.config, response),
+        })),
+      ),
+    );
+
+    unregisterFunctions.push(
+      search.values.listen(EVENT_VALUES_UPDATED, () =>
+        setSearchState((prevState) => ({
+          ...prevState,
+          ...valuesUpdatedListener(search.values, search.pipeline, prevState.config),
+        })),
+      ),
+    );
+
+    if (!instant.current) {
+      const { project, collection, endpoint } = search.pipeline.config;
+      instant.current = {
+        pipeline: new Pipeline({ project, collection, endpoint }, 'autocomplete', new NoTracking()),
+        values: new Values(),
+      };
+    }
+
+    unregisterFunctions.push(
+      instant.current.pipeline.listen(EVENT_RESPONSE_UPDATED, (response: Response) =>
+        setInstantState((prevState) => ({
+          ...prevState,
+          response,
+          ...responseUpdatedListener((instant.current as ProviderPipelineConfig).values, prevState.config, response),
+        })),
+      ),
+    );
+
+    unregisterFunctions.push(
+      instant.current.values.listen(EVENT_VALUES_UPDATED, () =>
+        setInstantState((prevState) => ({
+          ...prevState,
+          ...valuesUpdatedListener(
+            (instant.current as ProviderPipelineConfig).values,
+            (instant.current as ProviderPipelineConfig).pipeline,
+            prevState.config,
+          ),
+        })),
+      ),
+    );
+
+    if (searchOnLoad) {
+      search.pipeline.search(search.values.get());
+    }
+
+    return () => {
+      unregisterFunctions.forEach((fn) => fn());
+    };
   }, []);
 
   const searchFn = (key: 'search' | 'instant') =>
@@ -163,8 +259,6 @@ const Provider: React.FC<PipelineProviderProps> = ({ children, search, instant, 
     }
     pipeline.clearResponse(values.get());
   };
-
-  // const handleResultClicked = (url: string) => search.pipeline.emitResultClicked(url);
 
   const handlePaginate = (page: number) => {
     const { pipeline, values } = search;

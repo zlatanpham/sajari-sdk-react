@@ -19,6 +19,7 @@ export class NoTracking extends Tracking {
   public reset(values?: { [k: string]: string }) {
     (this.clientTracking as Session).reset();
     if (values !== undefined) {
+      // eslint-disable-next-line no-underscore-dangle
       this._emitTrackingReset(values);
     }
   }

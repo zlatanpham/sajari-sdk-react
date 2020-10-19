@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-underscore-dangle */

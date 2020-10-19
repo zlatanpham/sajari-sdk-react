@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-param-reassign */
 import { EVENT_OPTIONS_UPDATED, EVENT_SELECTION_UPDATED } from '../events';
 import { Listener } from './listener';
 
@@ -14,9 +17,13 @@ export type CallbackFn = (filter: Filter) => void;
  */
 export class Filter {
   private current: string[];
+
   private options: Options;
+
   private multi: boolean;
+
   private joinOperator: 'OR' | 'AND';
+
   private listeners: { [k: string]: Listener };
 
   /**
@@ -129,7 +136,7 @@ export class Filter {
           f = f();
         }
         if (f !== '') {
-          f = '(' + f + ')';
+          f = `(${f})`;
         }
         return f;
       })
@@ -193,9 +200,9 @@ export const CombineFilters = (filters: Filter[], operator: 'AND' | 'OR' = 'AND'
   let on: string[] = [];
 
   filters.forEach((f) => {
-    opts['' + count] = () => f.filter();
-    on = on.concat(['' + count]);
-    count++;
+    opts[count.toString()] = () => f.filter();
+    on = on.concat([count.toString()]);
+    count += 1;
   });
 
   const combFilter = new Filter(opts, on, true, operator);
