@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createContext } from 'sajari-react-sdk-utils';
@@ -6,17 +7,19 @@ import debounce from '../utils/debounce';
 import { Config, defaultConfig } from './config';
 // eslint-disable-next-line import/named
 import {
-  NoTracking,
   ClickTracking,
-  PosNegTracking,
+  Filter,
+  NoTracking,
   Pipeline,
+  PosNegTracking,
   Range,
   RangeFilter,
   Response,
   Values,
 } from './controllers';
+import { CombineFilters } from './controllers/filterNew';
 import { UnlistenFn } from './controllers/listener';
-import { EVENT_RESPONSE_UPDATED, EVENT_VALUES_UPDATED } from './events';
+import { EVENT_RESPONSE_UPDATED, EVENT_SELECTION_UPDATED, EVENT_VALUES_UPDATED } from './events';
 import {
   Context,
   PipelineProviderState,
@@ -95,6 +98,14 @@ const SearchContextProvider: React.FC<SearchProviderValues> = ({
     }));
 
     const unregisterFunctions: UnlistenFn[] = [];
+
+    if (search.filters) {
+      const filter = CombineFilters(search.filters);
+      unregisterFunctions.push(
+        filter.listen(EVENT_SELECTION_UPDATED, () => search.pipeline.search(search.values.get())),
+      );
+      search.values.set({ filter: () => filter.filter() });
+    }
 
     unregisterFunctions.push(
       search.pipeline.listen(EVENT_RESPONSE_UPDATED, (response: Response) =>
@@ -210,6 +221,7 @@ const SearchContextProvider: React.FC<SearchProviderValues> = ({
       search: {
         ...state.search,
         values: search.values,
+        filters: search.filters,
         pipeline: search.pipeline,
         search: searchFn('search'),
         clear: clear('search'),
@@ -218,6 +230,7 @@ const SearchContextProvider: React.FC<SearchProviderValues> = ({
       instant: {
         ...state.instant,
         values: instant.current?.values,
+        filters: search.filters,
         pipeline: instant.current?.pipeline,
         search: searchFn('instant'),
         clear: clear('instant'),
@@ -231,5 +244,5 @@ const SearchContextProvider: React.FC<SearchProviderValues> = ({
 };
 
 export default SearchContextProvider;
-export { ClickTracking, PosNegTracking, useContext, Pipeline, Values, RangeFilter, Range };
+export { ClickTracking, PosNegTracking, useContext, Pipeline, Values, RangeFilter, Range, Filter };
 export type { SearchProviderValues };

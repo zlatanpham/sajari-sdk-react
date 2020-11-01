@@ -2,8 +2,9 @@ import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ContextProvider } from '@sajari/react-search-ui';
-import { SearchContextProvider, Pipeline, Values, useSearchContext } from '@sajari/react-hooks';
+import { SearchContextProvider, Pipeline, Values, useSearchContext, useFilter, Filter } from '@sajari/react-hooks';
 import { Pagination } from '@sajari/react-components';
+import { useEffect } from 'react';
 
 const SearchPlayground = () => {
   const { search, setPage, page, pageCount, pageSize, totalResults, results } = useSearchContext<{
@@ -11,8 +12,15 @@ const SearchPlayground = () => {
     free_shipping: string;
   }>();
 
+  const { setSelected, selected, options } = useFilter('price');
+  console.log('options:', options);
+
   const fromItem = pageSize * (page - 1) + 1;
   const toItem = results?.length + fromItem - 1;
+
+  useEffect(() => {
+    setSelected('A');
+  }, []);
 
   return (
     <>
@@ -22,6 +30,11 @@ const SearchPlayground = () => {
           search(e.target.value, true);
         }}
       />
+      {(options || []).map(({ label }) => (
+        <button key={label} onClick={() => setSelected(label)}>
+          {label}
+        </button>
+      ))}
       {results ? (
         <p>
           Showing <b>{fromItem}</b> - <b>{toItem}</b> out of <b>{totalResults}</b> items
@@ -47,13 +60,6 @@ const SearchPlayground = () => {
           </ul>
         </div>
       ))}
-      <Pagination
-        page={page}
-        pageSize={pageSize}
-        totalResults={totalResults}
-        pageCount={pageCount}
-        onChange={setPage}
-      />
     </>
   );
 };
@@ -67,14 +73,25 @@ const pipeline = new Pipeline(
   'query',
 );
 
+const priceFilter = new Filter({
+  name: 'price',
+  options: {
+    All: '',
+    A: "price>='100'",
+    B: "price<='20'",
+  },
+  multi: false,
+  initial: 'All',
+});
+
 const values = new Values({ q: '' });
 
 const App = () => {
   return (
-    <SearchContextProvider search={{ pipeline, values, fields: { category: 'brand', title: 'name' } }}>
-      <ContextProvider>
-        <SearchPlayground />
-      </ContextProvider>
+    <SearchContextProvider
+      search={{ pipeline, values, fields: { category: 'brand', title: 'name' }, filters: [priceFilter] }}
+    >
+      <SearchPlayground />
     </SearchContextProvider>
   );
 };

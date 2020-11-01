@@ -5,7 +5,7 @@ export { Response } from './response';
 export { Values, CallbackFn as ValuesCallbackFn } from './values';
 
 export { Analytics, GoogleAnalytics, DebugAnalytics } from './analytics';
-export { Filter, CombineFilters } from './filter';
+export { Filter, CombineFilters } from './filterNew';
 export { CountAggregateFilter } from './aggregateFilter';
 // eslint-disable-next-line import/named
 export { RangeFilter, Range } from './rangeFilter';
