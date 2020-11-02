@@ -169,6 +169,12 @@ export class Filter {
     }
   }
 
+  public getBuckets(): string {
+    return Object.entries(this.options)
+      .map(([key, value]) => `${this.name}_${key}:${value}`)
+      .join(',');
+  }
+
   /**
    * Emits a selection updated event to the selection updated listener.
    * @private

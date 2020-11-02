@@ -13,14 +13,10 @@ const SearchPlayground = () => {
   }>();
 
   const { setSelected, selected, options } = useFilter('price');
-  console.log('options:', options);
+  console.log({ selected });
 
   const fromItem = pageSize * (page - 1) + 1;
   const toItem = results?.length + fromItem - 1;
-
-  useEffect(() => {
-    setSelected('A');
-  }, []);
 
   return (
     <>
@@ -30,9 +26,9 @@ const SearchPlayground = () => {
           search(e.target.value, true);
         }}
       />
-      {(options || []).map(({ label }) => (
-        <button key={label} onClick={() => setSelected(label)}>
-          {label}
+      {(options || []).map(({ label, count }) => (
+        <button key={label} onClick={() => setSelected(label)} style={{ opacity: selected.includes(label) ? 0.7 : 1 }}>
+          {label} ({count})
         </button>
       ))}
       {results ? (
@@ -76,15 +72,15 @@ const pipeline = new Pipeline(
 const priceFilter = new Filter({
   name: 'price',
   options: {
-    All: '',
-    A: "price>='100'",
-    B: "price<='20'",
+    high: 'price >= 200',
+    mid: 'price >= 50',
+    low: 'price < 50',
   },
-  multi: false,
-  initial: 'All',
+  multi: true,
+  initial: [],
 });
 
-const values = new Values({ q: '' });
+const values = new Values({ q: '', count: 'level1' });
 
 const App = () => {
   return (

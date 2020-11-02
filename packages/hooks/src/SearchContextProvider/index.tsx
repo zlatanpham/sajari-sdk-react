@@ -104,7 +104,8 @@ const SearchContextProvider: React.FC<SearchProviderValues> = ({
       unregisterFunctions.push(
         filter.listen(EVENT_SELECTION_UPDATED, () => search.pipeline.search(search.values.get())),
       );
-      search.values.set({ filter: () => filter.filter() });
+      const buckets = search.filters.map((filter) => filter.getBuckets()).join(',');
+      search.values.set({ filter: () => filter.filter(), buckets });
     }
 
     unregisterFunctions.push(
