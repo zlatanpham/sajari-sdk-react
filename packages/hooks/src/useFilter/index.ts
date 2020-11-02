@@ -93,6 +93,7 @@ function useFilter(name: string) {
     options,
     selected: filter.get(),
     setSelected,
+    multi: filter.isMulti(),
   };
 }
 

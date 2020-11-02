@@ -159,7 +159,7 @@ export class Filter {
   /**
    * Builds up the filter string from the current filter and it's children.
    */
-  public filter(): string {
+  public filter() {
     const filters = this.current
       .map((c) => {
         let f = this.options[c];
@@ -182,10 +182,14 @@ export class Filter {
     }
   }
 
-  public getBuckets(): string {
+  public getBuckets() {
     return Object.entries(this.options)
       .map(([key, value]) => `${this.name}_${key}:${value}`)
       .join(',');
+  }
+
+  public isMulti() {
+    return this.multi;
   }
 
   /**

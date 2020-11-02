@@ -1,0 +1,131 @@
+import SEO from '../../components/SEO';
+
+<SEO title="useFilter" description="useFilter returns the filter items (current values and options)" />
+
+# useFilter
+
+`useFilter` returns the filter items (current values and options).
+
+```js
+import { useFilter, Filter } from '@sajari/react-hooks';
+```
+
+## Usage
+
+```jsx
+function Example() {
+  const pipeline = new Pipeline(
+    {
+      project: '1594153711901724220',
+      collection: 'bestbuy',
+      endpoint: '//jsonapi-us-valkyrie.sajari.net',
+    },
+    'query',
+  );
+
+  const priceFilter = new Filter({
+    name: 'price',
+    options: {
+      high: 'price >= 200',
+      mid: 'price >= 50',
+      low: 'price < 50',
+    },
+    multi: true,
+    initial: [],
+  });
+
+  const categoryFilter = new Filter({
+    name: 'category',
+    count: 'level1',
+    multi: true,
+  });
+
+  const values = new Values({ q: '' });
+
+  const FilterRender = ({ name, title }) => {
+    const { multi, options, selected, setSelected } = useFilter(name);
+
+    if (Object.keys(options).length === 0) {
+      return null;
+    }
+
+    const Group = multi ? CheckboxGroup : RadioGroup;
+    const Control = multi ? Checkbox : Radio;
+
+    return (
+      <div>
+        <Heading as="h1">{title}</Heading>
+        <Group name={name} value={selected} onChange={(values) => setSelected(values[0])}>
+          {options.map(({ value, label, count }) => (
+            <div className="justify-between">
+              <Control value={label}>
+                {label} ({count})
+              </Control>
+            </div>
+          ))}
+        </Group>
+      </div>
+    );
+  };
+
+  const PriceFilter = () => <FilterRender name="price" title="Price ranges" />;
+
+  const SearchPlayground = React.memo(() => {
+    const { search, results } = useSearchContext();
+    const [query, setQuery] = React.useState('');
+
+    React.useEffect(() => {
+      if (query) {
+        search(query);
+      }
+    }, []);
+
+    return (
+      <div className="flex flex-col space-y-4">
+        <div className="flex space-x-4">
+          <form
+            className="w-3/5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              search(query);
+            }}
+          >
+            <Input label="Search something" onChange={(value) => setQuery(value)} />
+          </form>
+        </div>
+        <PriceFilter />
+        {results ? <Results /> : null}
+      </div>
+    );
+  });
+
+  return (
+    <SearchContextProvider
+      search={{
+        pipeline,
+        values,
+        fields: { category: 'brand', title: 'name' },
+        filters: [priceFilter, categoryFilter],
+      }}
+    >
+      <SearchPlayground />
+    </SearchContextProvider>
+  );
+}
+```
+
+## Anatomy
+
+`useFilter` returns an object containing the following properties:
+
+| Name          | Type                     | Default | Description                                                |
+| ------------- | ------------------------ | ------- | ---------------------------------------------------------- |
+| `options`     | `Option[]`               |         | An array of selectable options                             |
+| `selected`    | `string[]`               | []      | An array of, or single item for current selected option(s) |
+| `setSelected` | `(value:string) => void` | []      | Set the selected option(s)                                 |
+
+## Props
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+
