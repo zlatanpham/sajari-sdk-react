@@ -1,15 +1,13 @@
 import { CountAggregate } from '@sajari/sdk-js';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useContext } from '../SearchContextProvider';
 import { FilterItem, FilterItems } from './types';
 
 function useFilter(name: string) {
   const {
-    search: { filters = [], response, query },
+    search: { filters = [], response },
   } = useContext();
-
-  const previous = useRef<FilterItems>([]);
 
   const filter = useMemo(() => {
     return filters.filter((f) => f.getName() === name)[0];
@@ -19,11 +17,10 @@ function useFilter(name: string) {
     throw new Error(`Filter "${name}" doesn't exist.`);
   }
 
+  // Passing response as a dependency will cause the output from the previous response
+  // need to do extra work here to solve the issue and remove ts-ignore
   // @ts-ignore
   const options = useMemo(() => {
-    if (query === '') {
-      return previous.current;
-    }
     // eslint-disable-next-line @typescript-eslint/no-shadow
     let options: FilterItems = [];
 
@@ -33,6 +30,26 @@ function useFilter(name: string) {
 
     const aggregates = response.getAggregates();
     const aggregateFilters = response.getAggregateFilters();
+    const fieldCount = filter.getCount();
+
+    if (fieldCount) {
+      let count = {};
+      ({ count } = (aggregateFilters || {})[fieldCount] || {});
+      if (!count) {
+        ({ count = {} } = (aggregates || {})[fieldCount] || {});
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      options = Object.entries(count).map(([label, count]: [string, number]) => ({
+        label,
+        count,
+        value: `${fieldCount} = '${label}'`,
+      }));
+
+      filter.setOptions(options.reduce((a, c) => ({ ...a, [c.label]: c.value }), {}));
+
+      return options;
+    }
 
     const getBucketCount = (value: string): number => {
       let count: number | CountAggregate = 0;
@@ -49,12 +66,9 @@ function useFilter(name: string) {
         return 0;
       }
 
-      // @ts-ignore - String index (works fine 🤷🏼‍♂️)
       return (count[value] as number) ?? 0;
     };
 
-    // Get items from aggregates for regular facets
-    // or map the bucket types to title / filter format
     // Get items from aggregates for regular facets
     // or map the bucket types to title / filter format
     if (!aggregates?.buckets) {
@@ -67,8 +81,6 @@ function useFilter(name: string) {
 
       return { label, value, count } as FilterItem;
     });
-
-    previous.current = options;
 
     return options;
   });

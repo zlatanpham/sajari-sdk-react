@@ -100,12 +100,25 @@ const SearchContextProvider: React.FC<SearchProviderValues> = ({
     const unregisterFunctions: UnlistenFn[] = [];
 
     if (search.filters) {
-      const filter = CombineFilters(search.filters);
+      const filter = CombineFilters(search.filters.filter((f) => !f.getCount()));
+      const countFilter = CombineFilters(search.filters.filter((f) => f.getCount()));
+
       unregisterFunctions.push(
         filter.listen(EVENT_SELECTION_UPDATED, () => search.pipeline.search(search.values.get())),
       );
-      const buckets = search.filters.map((filter) => filter.getBuckets()).join(',');
-      search.values.set({ filter: () => filter.filter(), buckets });
+      unregisterFunctions.push(
+        countFilter.listen(EVENT_SELECTION_UPDATED, () => search.pipeline.search(search.values.get())),
+      );
+
+      const buckets = search.filters
+        .map((filter) => filter.getBuckets())
+        .filter(Boolean)
+        .join(',');
+      const count = search.filters
+        .map((filter) => filter.getCount())
+        .filter(Boolean)
+        .join(',');
+      search.values.set({ filter: () => filter.filter(), countFilters: () => countFilter.filter(), buckets, count });
     }
 
     unregisterFunctions.push(

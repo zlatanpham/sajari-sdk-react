@@ -24,6 +24,8 @@ export class Filter {
 
   private multi: boolean;
 
+  private count: string | undefined;
+
   private joinOperator: 'OR' | 'AND';
 
   private listeners: { [k: string]: Listener };
@@ -38,12 +40,14 @@ export class Filter {
     initial = [],
     joinOperator = 'OR',
     multi = false,
-    options,
+    options = {},
     name,
+    count,
   }: {
     name: string;
     options: Options; // Dictionary of name -> filter pairs
     initial?: string | string[]; // List of initially selected items
+    count?: string; // Count aggregate field
     multi?: boolean; // Multiple selections allowed?
     joinOperator?: 'OR' | 'AND'; // Join operator used if multi = true
   }) {
@@ -55,6 +59,8 @@ export class Filter {
     this.current = initial;
     /** @private */
     this.name = name;
+    /** @private */
+    this.count = count;
     /** @private */
     this.options = options;
     /** @private */
@@ -125,8 +131,15 @@ export class Filter {
   /**
    * Get name of the filter.
    */
-  public getName(): string {
+  public getName() {
     return this.name;
+  }
+
+  /**
+   * Get count aggregate field.
+   */
+  public getCount() {
+    return this.count;
   }
 
   /**

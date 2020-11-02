@@ -13,7 +13,9 @@ const SearchPlayground = () => {
   }>();
 
   const { setSelected, selected, options } = useFilter('price');
-  console.log({ selected });
+  const { options: categoryOptions, setSelected: categorySetSelected, selected: categorySelected } = useFilter(
+    'category',
+  );
 
   const fromItem = pageSize * (page - 1) + 1;
   const toItem = results?.length + fromItem - 1;
@@ -26,11 +28,30 @@ const SearchPlayground = () => {
           search(e.target.value, true);
         }}
       />
-      {(options || []).map(({ label, count }) => (
-        <button key={label} onClick={() => setSelected(label)} style={{ opacity: selected.includes(label) ? 0.7 : 1 }}>
-          {label} ({count})
-        </button>
-      ))}
+      <div>
+        <h6>Price</h6>
+        {(options || []).map(({ label, count }) => (
+          <button
+            key={label}
+            onClick={() => setSelected(label)}
+            style={{ opacity: selected.includes(label) ? 0.7 : 1 }}
+          >
+            {label} ({count})
+          </button>
+        ))}
+      </div>
+      <div>
+        <h6>Category</h6>
+        {(categoryOptions || []).map(({ label, count }) => (
+          <button
+            key={label}
+            onClick={() => categorySetSelected(label)}
+            style={{ opacity: categorySelected.includes(label) ? 0.7 : 1 }}
+          >
+            {label} ({count})
+          </button>
+        ))}
+      </div>
       {results ? (
         <p>
           Showing <b>{fromItem}</b> - <b>{toItem}</b> out of <b>{totalResults}</b> items
@@ -80,12 +101,23 @@ const priceFilter = new Filter({
   initial: [],
 });
 
-const values = new Values({ q: '', count: 'level1' });
+const categoryFilter = new Filter({
+  name: 'category',
+  count: 'level1',
+  multi: true,
+});
+
+const values = new Values({ q: '' });
 
 const App = () => {
   return (
     <SearchContextProvider
-      search={{ pipeline, values, fields: { category: 'brand', title: 'name' }, filters: [priceFilter] }}
+      search={{
+        pipeline,
+        values,
+        fields: { category: 'brand', title: 'name' },
+        filters: [priceFilter, categoryFilter],
+      }}
     >
       <SearchPlayground />
     </SearchContextProvider>
