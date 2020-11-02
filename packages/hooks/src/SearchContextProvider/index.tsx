@@ -17,7 +17,7 @@ import {
   Response,
   Values,
 } from './controllers';
-import { CombineFilters } from './controllers/filterNew';
+import { CombineFilters } from './controllers/filter';
 import { UnlistenFn } from './controllers/listener';
 import { EVENT_RESPONSE_UPDATED, EVENT_SELECTION_UPDATED, EVENT_VALUES_UPDATED } from './events';
 import {

@@ -18,9 +18,13 @@ export type CallbackFn = (filter: Filter) => void;
 export class Filter {
   private current: string[];
 
+  private name: string;
+
   private options: Options;
 
   private multi: boolean;
+
+  private count: string | undefined;
 
   private joinOperator: 'OR' | 'AND';
 
@@ -32,18 +36,31 @@ export class Filter {
    * @example
    * const filter = new Filter({});
    */
-  constructor(
-    options: Options, // Dictionary of name -> filter pairs
-    initial: string | string[] = [], // List of initially selected items
-    multi: boolean = false, // Multiple selections allowed?
-    joinOperator: 'OR' | 'AND' = 'OR', // Join operator used if multi = true
-  ) {
+  constructor({
+    initial = [],
+    joinOperator = 'OR',
+    multi = false,
+    options = {},
+    name,
+    count,
+  }: {
+    name: string;
+    options: Options; // Dictionary of name -> filter pairs
+    initial?: string | string[]; // List of initially selected items
+    count?: string; // Count aggregate field
+    multi?: boolean; // Multiple selections allowed?
+    joinOperator?: 'OR' | 'AND'; // Join operator used if multi = true
+  }) {
     if (typeof initial === 'string') {
       initial = [initial];
     }
 
     /** @private */
     this.current = initial;
+    /** @private */
+    this.name = name;
+    /** @private */
+    this.count = count;
     /** @private */
     this.options = options;
     /** @private */
@@ -112,6 +129,20 @@ export class Filter {
   }
 
   /**
+   * Get name of the filter.
+   */
+  public getName() {
+    return this.name;
+  }
+
+  /**
+   * Get count aggregate field.
+   */
+  public getCount() {
+    return this.count;
+  }
+
+  /**
    * Get all the options defined in this filter.
    */
   public getOptions(...fields: string[]): Options {
@@ -149,6 +180,12 @@ export class Filter {
       default:
         return filters.join(` ${this.joinOperator} `);
     }
+  }
+
+  public getBuckets(): string {
+    return Object.entries(this.options)
+      .map(([key, value]) => `${this.name}_${key}:${value}`)
+      .join(',');
   }
 
   /**
@@ -205,7 +242,7 @@ export const CombineFilters = (filters: Filter[], operator: 'AND' | 'OR' = 'AND'
     count += 1;
   });
 
-  const combFilter = new Filter(opts, on, true, operator);
+  const combFilter = new Filter({ joinOperator: operator, name: '', options: opts, initial: on, multi: true });
   filters.forEach((f) => {
     f.listen(EVENT_SELECTION_UPDATED, () => {
       // @ts-ignore

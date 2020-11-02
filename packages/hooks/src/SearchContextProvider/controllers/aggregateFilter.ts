@@ -3,7 +3,7 @@
 import { Aggregates, CountAggregate } from '@sajari/sdk-js';
 
 import { EVENT_RESPONSE_UPDATED } from '../events';
-import { Filter } from './filter';
+import { Filter } from './deprecatedFilter';
 import { Pipeline } from './pipeline';
 import { Values } from './values';
 
