@@ -21,6 +21,9 @@ const Dropdown = () => {
     getMenuProps,
     showDropdownTips,
     showPoweredBy,
+    itemToString,
+    itemRender,
+    typedInputValue,
   } = useComboboxContext();
   const shown = (mode === 'results' || mode === 'suggestions') && open && items.length > 0;
   const styles = useDropdownStyles({ shown });
@@ -33,20 +36,31 @@ const Dropdown = () => {
       </Text>
 
       <ul {...getMenuProps()} css={styles.items}>
-        {items.map((value, index) => {
-          const selected = highlightedIndex === index;
-          const highlight = inputValue.length > 0 && value.startsWith(inputValue);
+        {itemRender
+          ? items.map((item, index) =>
+              itemRender({
+                item,
+                index,
+                selected: highlightedIndex === index,
+                inputValue,
+                typedInputValue,
+              }),
+            )
+          : items.map((item, index) => {
+              const value = itemToString(item);
+              const selected = highlightedIndex === index;
+              const highlight = inputValue.length > 0 && value.startsWith(inputValue);
 
-          return (
-            <DropdownItem
-              value={value}
-              highlight={highlight}
-              selected={selected}
-              index={index}
-              key={`${value}-${index}`}
-            />
-          );
-        })}
+              return (
+                <DropdownItem
+                  value={value}
+                  highlight={highlight}
+                  selected={selected}
+                  index={index}
+                  key={`${value}-${index}`}
+                />
+              );
+            })}
       </ul>
 
       {(showDropdownTips || showPoweredBy) && (

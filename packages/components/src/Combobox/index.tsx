@@ -37,9 +37,12 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
     size = 'md',
     showDropdownTips = true,
     showPoweredBy = true,
+    itemToString = (item: string) => item,
+    itemRender,
     ...rest
   } = props;
   const [value, setValue] = useState(valueProp);
+  const [typedInputValue, setTypedInputValue] = useState(valueProp.toString());
   useEffect(() => setValue(valueProp), [valueProp]);
   const { supported: voiceSupported } = useVoiceInput();
 
@@ -53,14 +56,102 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
     selectedItem,
     highlightedIndex,
     inputValue,
+    setInputValue,
   } = useCombobox({
     items,
+    itemToString,
     inputValue: value.toString(),
     onInputValueChange: (changes) => {
       setValue(changes.inputValue ?? '');
       onChange(changes.inputValue);
     },
     onSelectedItemChange: (changes) => onChange(changes.inputValue),
+    stateReducer: (state, { changes, type }) => {
+      switch (type) {
+        case useCombobox.stateChangeTypes.InputKeyDownArrowDown:
+          if (state.highlightedIndex === (items || []).length - 1) {
+            return {
+              ...changes,
+              inputValue: typedInputValue,
+              selectedItem: typedInputValue,
+              highlightedIndex: undefined,
+            };
+          }
+
+          if (changes.highlightedIndex !== undefined) {
+            const item = (items || [])[changes.highlightedIndex];
+            const stringItem = itemToString(item);
+
+            if (typeof stringItem !== 'string') {
+              return changes;
+            }
+
+            return {
+              ...changes,
+              inputValue: stringItem,
+              selectedItem: stringItem,
+            };
+          }
+
+          return changes;
+
+        case useCombobox.stateChangeTypes.InputKeyDownArrowUp:
+          if (state.highlightedIndex === 0) {
+            return {
+              ...changes,
+              inputValue: typedInputValue,
+              selectedItem: typedInputValue,
+              highlightedIndex: undefined,
+            };
+          }
+
+          if (changes.highlightedIndex !== undefined) {
+            const item = (items || [])[changes.highlightedIndex];
+            const stringItem = itemToString(item);
+
+            if (typeof stringItem !== 'string') {
+              return changes;
+            }
+
+            return {
+              ...changes,
+              inputValue: stringItem,
+              selectedItem: stringItem,
+            };
+          }
+
+          return changes;
+
+        case useCombobox.stateChangeTypes.ItemMouseMove:
+          if (mode === 'suggestions' && changes.highlightedIndex !== undefined) {
+            const item = (items || [])[changes.highlightedIndex];
+            const stringItem = itemToString(item);
+            if (typeof stringItem !== 'string') {
+              return changes;
+            }
+
+            return {
+              ...changes,
+              inputValue: stringItem,
+              selectedItem: stringItem,
+            };
+          }
+          return changes;
+
+        case useCombobox.stateChangeTypes.InputKeyDownEscape:
+          if (mode === 'suggestions' && state.isOpen) {
+            return {
+              ...changes,
+              isOpen: true,
+              inputValue: typedInputValue,
+            };
+          }
+          return changes;
+
+        default:
+          return changes;
+      }
+    },
   });
 
   const context = {
@@ -75,6 +166,9 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
     getItemProps,
     showDropdownTips,
     showPoweredBy,
+    typedInputValue,
+    itemToString,
+    itemRender,
   };
 
   const handleVoiceInput = (input: string) => {
@@ -124,9 +218,27 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
                     (e.nativeEvent as any).preventDownshiftDefault = true;
                   }
 
+                  if (e.key === 'Enter' && highlightedIndex > -1) {
+                    setTypedInputValue(itemToString(items[highlightedIndex]));
+                  }
+
+                  if (e.key === 'ArrowRight' && mode === 'typeahead') {
+                    // @ts-ignore: selectionStart is a member of event.target
+                    if (e.target.selectionStart === inputValue.length) {
+                      if (completion.startsWith(inputValue)) {
+                        onChange(completion);
+                        setInputValue(completion);
+                        setTypedInputValue(completion);
+                      }
+                    }
+                  }
+
                   onKeyDown(e);
                 },
-                onChange: (e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
+                onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                  onChange(e.target.value);
+                  setTypedInputValue(e.target.value);
+                },
               }),
               focusProps,
             )}
