@@ -15,77 +15,6 @@ Combobox component is a component that is used to get user input in a text field
 import { Combobox } from 'sajari/react-components';
 ```
 
-### Result mode
-
-```jsx
-function Example() {
-  const [query, setQuery] = React.useState('');
-  const [value, setValue] = React.useState('');
-  const items = [
-    { title: 'apple iphone', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
-    { title: 'apple imac', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
-    { title: 'apple watch', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
-    { title: 'apple mac pro', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
-    { title: 'apple macbook pro', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
-  ];
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    setQuery(formData.get('query'));
-  };
-
-  return (
-    <Combobox
-      mode="results"
-      label="Query"
-      name="query"
-      value={query}
-      placeholder="Search"
-      items={items}
-      onChange={setValue}
-      itemToString={(item) => item.title}
-    />
-  );
-}
-```
-
-### Custom mode
-
-```jsx
-function Example() {
-  const [query, setQuery] = React.useState('');
-  const [value, setValue] = React.useState('');
-  const items = [
-    { title: 'apple iphone' },
-    { title: 'apple imac' },
-    { title: 'apple watch' },
-    { title: 'apple mac pro' },
-    { title: 'apple macbook pro' },
-  ];
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    setQuery(formData.get('query'));
-  };
-
-  return (
-    <Combobox
-      mode="suggestions"
-      label="Query"
-      name="query"
-      value={query}
-      placeholder="Search"
-      items={items}
-      onChange={setValue}
-      itemToString={(item) => item.title}
-      itemRender={({ item }) => <div>{item.title}</div>}
-    />
-  );
-}
-```
-
 ## Usage
 
 ```jsx
@@ -137,6 +66,38 @@ function Example() {
       </form>
     </>
   );
+}
+```
+
+### Results mode
+
+```jsx
+function Example() {
+  const items = [
+    {
+      title: 'HEXBUG - Battle Spider Battle Ground - Multi',
+      image: 'https://cdn.sajari.net/demos/bestbuy/images/5235810_sb.jpg',
+      url: 'https://www.bestbuy.com/site//5235810.p?cmp=SAJARI&skuId=5235810&utm_medium=search&utm_campaign=sajari',
+      description:
+        'Experience a revolutionary fight with this Hexbug Battle Spider Battle Ground. Two remote control spiders fight to the end with infrared sensors that have 1.5-meter fire ranges. Each spider has a 360-degree rotating head and LED eyes that let you steer it toward its opponent. This Hexbug Battle Spider Battle Ground comes with 15 walls for a fun, challenging match.',
+    },
+    {
+      title: 'Beats by Dr. Dre - Beats Studio Wireless Over-Ear Headphones - Unity Edition Red White Blue',
+      image: 'https://cdn.sajari.net/demos/bestbuy/images/5655629_rb.jpg',
+      url: 'https://www.bestbuy.com/site//5655629.p?cmp=SAJARI&skuId=5655629&utm_medium=search&utm_campaign=sajari',
+      description:
+        'Beats Studio Wireless Unity Edition combines iconic Beats sound and design with country pride elements. Each headphone incorporates country-inspired graphic elements with a unifying black band for a signature Beats look.',
+    },
+    {
+      title: 'Epson - 664 Ink Bottle - Cyan',
+      image: 'https://cdn.sajari.net/demos/bestbuy/images/4274202_sb.jpg',
+      url: 'https://www.bestbuy.com/site//4274202.p?cmp=SAJARI&skuId=4274202&utm_medium=search&utm_campaign=sajari',
+      description:
+        'Print documents, flyers and brochures in vibrant color with this Epson 664 high-yield ink bottle, which works with select Epson EcoTank printers, including ET-2500, ET-2550, ET-4500 and ET-4550.',
+    },
+  ];
+
+  return <Combobox mode="results" placeholder="Search" items={items} />;
 }
 ```
 

@@ -3,11 +3,11 @@ import { PropGetters } from 'downshift';
 
 import { ComboboxMode, ComboboxProps } from './types';
 
-interface ComboboxContextProps<T = string> {
+interface ComboboxContextProps {
   mode: ComboboxMode;
   inputValue: string;
   open: boolean;
-  items: Array<T>;
+  items: ComboboxProps['items'];
   completion: string;
   getItemProps: PropGetters<any>['getItemProps'];
   getMenuProps: PropGetters<any>['getMenuProps'];
@@ -16,8 +16,6 @@ interface ComboboxContextProps<T = string> {
   showDropdownTips: boolean;
   showPoweredBy: boolean;
   typedInputValue: string;
-  itemToString: Required<ComboboxProps<T>>['itemToString'];
-  itemRender: ComboboxProps<T>['itemRender'];
 }
 
 const [ComboboxContextProvider, useComboboxContext] = createContext<ComboboxContextProps>({

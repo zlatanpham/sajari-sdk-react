@@ -5,11 +5,11 @@ export type ComboboxMode = 'standard' | 'typeahead' | 'suggestions' | 'results';
 export interface ResultItem {
   title: string;
   url?: string;
-  descption?: string;
+  description?: string;
   image?: string;
 }
 
-interface Props<T = string | ResultItem> {
+interface Props {
   /** The mode for the combobox to operate */
   mode?: ComboboxMode;
   /** The state when entering an invalid input */
@@ -28,7 +28,7 @@ interface Props<T = string | ResultItem> {
   /** Show a loading icon */
   loading?: boolean;
   /** Autocomplete items */
-  items?: Array<T>;
+  items?: string[] | ResultItem[];
   /** Called when the value changes  */
   onChange?: (value?: string) => void;
   /** The typeahead completion value */
@@ -39,18 +39,8 @@ interface Props<T = string | ResultItem> {
   showDropdownTips?: boolean;
   /** Whether to show the "Powered by Sajari" in the dropdown */
   showPoweredBy?: boolean;
-  /** Render function for customised suggestion item */
-  itemRender?: (params: {
-    item: T;
-    index: number;
-    selected: boolean;
-    inputValue: string;
-    typedInputValue: string;
-  }) => React.ReactNode;
-  /** Convert item to a suggestion string */
-  itemToString?: (item: T) => string;
 }
 
 type HtmlAttributes = Omit<React.InputHTMLAttributes<HTMLInputElement>, keyof Props>;
 
-export interface ComboboxProps<T = string> extends Props<T>, HtmlAttributes {}
+export interface ComboboxProps extends Props, HtmlAttributes {}

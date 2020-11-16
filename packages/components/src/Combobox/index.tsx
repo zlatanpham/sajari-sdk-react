@@ -15,12 +15,9 @@ import Typeahead from './components/Typeahead';
 import Voice from './components/Voice';
 import ComboboxContextProvider from './context';
 import { useComboboxStyles } from './styles';
-import { ComboboxProps } from './types';
+import { ComboboxProps, ResultItem } from './types';
 
-const Combobox = React.forwardRef(function ComboboxInner<T = string>(
-  props: ComboboxProps<T>,
-  ref: React.Ref<HTMLInputElement>,
-) {
+const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInputElement>) => {
   const {
     mode = 'standard',
     label,
@@ -40,8 +37,6 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
     size = 'md',
     showDropdownTips = true,
     showPoweredBy = true,
-    itemToString = (item: T) => ((item as T) as unknown) as string,
-    itemRender,
     ...rest
   } = props;
   const [value, setValue] = useState(valueProp);
@@ -60,67 +55,78 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
     highlightedIndex,
     inputValue,
     setInputValue,
-  } = useCombobox<T>({
+  } = useCombobox<string | ResultItem>({
     items,
-    itemToString,
+    itemToString: mode === 'results' ? (item: ResultItem) => item.title : (item: string) => item,
     inputValue: value.toString(),
     onInputValueChange: (changes) => {
       setValue(changes.inputValue ?? '');
       onChange(changes.inputValue);
     },
     onSelectedItemChange: (changes) => onChange(changes.inputValue),
-    // @ts-ignore
     stateReducer: (state, { changes, type }) => {
       switch (type) {
         case useCombobox.stateChangeTypes.InputKeyDownArrowDown:
-          if (state.highlightedIndex === (items || []).length - 1) {
-            return {
-              ...changes,
-              inputValue: typedInputValue,
-              selectedItem: typedInputValue,
-              highlightedIndex: undefined,
-            };
-          }
-
-          if (changes.highlightedIndex !== undefined) {
-            const item = (items || [])[changes.highlightedIndex];
-            const stringItem = itemToString(item);
-
-            if (typeof stringItem !== 'string') {
-              return changes;
+          if (mode === 'suggestions') {
+            if (state.highlightedIndex === (items || []).length - 1) {
+              return {
+                ...changes,
+                inputValue: typedInputValue,
+                selectedItem: typedInputValue,
+                highlightedIndex: undefined,
+              };
             }
 
-            return {
-              ...changes,
-              inputValue: stringItem,
-              selectedItem: stringItem,
-            };
+            if (changes.highlightedIndex !== undefined) {
+              const item = (items || [])[changes.highlightedIndex];
+
+              if (typeof item !== 'string') {
+                return changes;
+              }
+
+              return {
+                ...changes,
+                inputValue: item,
+                selectedItem: item,
+              };
+            }
           }
 
           return changes;
 
         case useCombobox.stateChangeTypes.InputKeyDownArrowUp:
-          if (state.highlightedIndex === 0) {
-            return {
-              ...changes,
-              inputValue: typedInputValue,
-              selectedItem: typedInputValue,
-              highlightedIndex: undefined,
-            };
-          }
-
-          if (changes.highlightedIndex !== undefined) {
-            const item = (items || [])[changes.highlightedIndex];
-            const stringItem = itemToString(item);
-
-            if (typeof stringItem !== 'string') {
-              return changes;
+          if (mode === 'suggestions') {
+            if (state.highlightedIndex === 0) {
+              return {
+                ...changes,
+                inputValue: typedInputValue,
+                selectedItem: typedInputValue,
+                highlightedIndex: undefined,
+              };
             }
 
+            if (changes.highlightedIndex !== undefined) {
+              const item = (items || [])[changes.highlightedIndex];
+
+              if (typeof item !== 'string') {
+                return changes;
+              }
+
+              return {
+                ...changes,
+                inputValue: item,
+                selectedItem: item,
+              };
+            }
+          }
+
+          return changes;
+
+        case useCombobox.stateChangeTypes.InputKeyDownEnter:
+          if (mode === 'results') {
             return {
               ...changes,
-              inputValue: stringItem,
-              selectedItem: stringItem,
+              inputValue: '',
             };
           }
 
@@ -129,15 +135,14 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
         case useCombobox.stateChangeTypes.ItemMouseMove:
           if (mode === 'suggestions' && changes.highlightedIndex !== undefined) {
             const item = (items || [])[changes.highlightedIndex];
-            const stringItem = itemToString(item);
-            if (typeof stringItem !== 'string') {
+            if (typeof item !== 'string') {
               return changes;
             }
 
             return {
               ...changes,
-              inputValue: stringItem,
-              selectedItem: stringItem,
+              inputValue: item,
+              selectedItem: item,
             };
           }
           return changes;
@@ -171,8 +176,6 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
     showDropdownTips,
     showPoweredBy,
     typedInputValue,
-    itemToString,
-    itemRender,
   };
 
   const handleVoiceInput = (input: string) => {
@@ -189,7 +192,6 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
   });
 
   return (
-    // @ts-ignore
     <ComboboxContextProvider value={context}>
       <Box css={styles.container}>
         <Box css={styles.inputContainer} {...getComboboxProps()}>
@@ -223,11 +225,12 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
                     (e.nativeEvent as any).preventDownshiftDefault = true;
                   }
 
-                  if (e.key === 'Enter' && highlightedIndex > -1) {
-                    setTypedInputValue(itemToString(items[highlightedIndex]));
+                  if (mode !== 'results' && e.key === 'Enter' && highlightedIndex > -1) {
+                    // @ts-ignore
+                    setTypedInputValue(items[highlightedIndex].title);
                   }
 
-                  if (e.key === 'ArrowRight' && mode === 'typeahead') {
+                  if (mode === 'typeahead' && e.key === 'ArrowRight') {
                     // @ts-ignore: selectionStart is a member of event.target
                     if (e.target.selectionStart === inputValue.length) {
                       if (completion.startsWith(inputValue)) {
@@ -235,6 +238,13 @@ const Combobox = React.forwardRef(function ComboboxInner<T = string>(
                         setInputValue(completion);
                         setTypedInputValue(completion);
                       }
+                    }
+                  }
+
+                  if (mode === 'results' && e.key === 'Enter' && highlightedIndex > -1) {
+                    const item = ((items as ResultItem[]) || [])[highlightedIndex];
+                    if (item !== undefined && item.url) {
+                      window.location.href = item.url;
                     }
                   }
 

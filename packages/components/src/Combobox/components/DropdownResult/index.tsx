@@ -1,17 +1,16 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
+import { Heading, Image, Text } from '@sajari/react-components';
 import tw from 'twin.macro';
 
-import { IconEnterKey } from '../../../assets/icons';
 import Box from '../../../Box';
 import { useComboboxContext } from '../../context';
 import { useDropdownItemStyles } from './styles';
 import { DropdownResultProps } from './types';
 
 const DropdownResult = (props: DropdownResultProps) => {
-  const { value, index, selected } = props;
-  const { getItemProps, showDropdownTips } = useComboboxContext();
+  const { value, index } = props;
+  const { getItemProps } = useComboboxContext();
   const styles = useDropdownItemStyles(props);
 
   return (
@@ -22,16 +21,19 @@ const DropdownResult = (props: DropdownResultProps) => {
         item: value,
       })}
       key={`${value}_${index}`}
-      css={styles.item}
     >
-      <Box as="span">{value.image}</Box>
+      <a href={value.url} target="_blank" rel="noreferrer" css={styles.item}>
+        <div css={styles.imageContainer}>
+          <Image src={value.image} css={styles.image} aspectRatio={1} objectFit="contain" />
+        </div>
 
-      {showDropdownTips && (
-        <Box as="span" css={[styles.label, selected ? tw`opacity-100` : tw`opacity-0`]}>
-          Select
-          <IconEnterKey css={tw`ml-2`} />
-        </Box>
-      )}
+        <div css={tw`space-y-2`}>
+          <Heading as="h1" size="base">
+            {value.title}
+          </Heading>
+          <Text truncate={2}>{value.description}</Text>
+        </div>
+      </a>
     </Box>
   );
 };
