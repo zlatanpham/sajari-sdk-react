@@ -10,6 +10,7 @@ import PoweredBy from '../../../PoweredBy';
 import Text from '../../../Text';
 import { useComboboxContext } from '../../context';
 import DropdownItem from '../DropdownItem';
+import DropdownResult from '../DropdownResult';
 import { useDropdownStyles } from './styles';
 
 const Dropdown = () => {
@@ -29,6 +30,39 @@ const Dropdown = () => {
   const shown = (mode === 'results' || mode === 'suggestions') && open && items.length > 0;
   const styles = useDropdownStyles({ shown });
   const label = mode === 'results' ? 'Results' : 'Suggestions';
+  let listRender: React.ReactNode = null;
+  if (itemRender) {
+    listRender = items.map((item, index) => {
+      return (
+        <React.Fragment key={itemToString(item)}>
+          {itemRender({
+            item,
+            index,
+            selected: highlightedIndex === index,
+            inputValue,
+            typedInputValue,
+          })}
+        </React.Fragment>
+      );
+    });
+  } else if (mode === 'results') {
+    listRender = items.map((item, index) => {
+      const selected = highlightedIndex === index;
+
+      // @ts-ignore
+      return <DropdownResult value={item} selected={selected} index={index} key={`${item.title}-${index}`} />;
+    });
+  } else {
+    listRender = items.map((item, index) => {
+      const value = itemToString(item);
+      const selected = highlightedIndex === index;
+      const highlight = inputValue.length > 0 && value.startsWith(inputValue);
+
+      return (
+        <DropdownItem value={value} highlight={highlight} selected={selected} index={index} key={`${value}-${index}`} />
+      );
+    });
+  }
 
   return (
     <Box css={styles.container}>
@@ -37,35 +71,7 @@ const Dropdown = () => {
       </Text>
 
       <ul {...getMenuProps()} css={styles.items}>
-        {itemRender
-          ? items.map((item, index) => {
-              return (
-                <React.Fragment key={itemToString(item)}>
-                  {itemRender({
-                    item,
-                    index,
-                    selected: highlightedIndex === index,
-                    inputValue,
-                    typedInputValue,
-                  })}
-                </React.Fragment>
-              );
-            })
-          : items.map((item, index) => {
-              const value = itemToString(item);
-              const selected = highlightedIndex === index;
-              const highlight = inputValue.length > 0 && value.startsWith(inputValue);
-
-              return (
-                <DropdownItem
-                  value={value}
-                  highlight={highlight}
-                  selected={selected}
-                  index={index}
-                  key={`${value}-${index}`}
-                />
-              );
-            })}
+        {listRender}
       </ul>
 
       {(showDropdownTips || showPoweredBy) && (

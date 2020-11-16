@@ -2,7 +2,14 @@ import React from 'react';
 
 export type ComboboxMode = 'standard' | 'typeahead' | 'suggestions' | 'results';
 
-interface Props<T = string> {
+export interface ResultItem {
+  title: string;
+  url?: string;
+  descption?: string;
+  image?: string;
+}
+
+interface Props<T = string | ResultItem> {
   /** The mode for the combobox to operate */
   mode?: ComboboxMode;
   /** The state when entering an invalid input */

@@ -15,6 +15,77 @@ Combobox component is a component that is used to get user input in a text field
 import { Combobox } from 'sajari/react-components';
 ```
 
+### Result mode
+
+```jsx
+function Example() {
+  const [query, setQuery] = React.useState('');
+  const [value, setValue] = React.useState('');
+  const items = [
+    { title: 'apple iphone', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
+    { title: 'apple imac', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
+    { title: 'apple watch', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
+    { title: 'apple mac pro', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
+    { title: 'apple macbook pro', image: 'https://cdn.sajari.net/demos/bestbuy/images/3162706_sb.jpg' },
+  ];
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    setQuery(formData.get('query'));
+  };
+
+  return (
+    <Combobox
+      mode="results"
+      label="Query"
+      name="query"
+      value={query}
+      placeholder="Search"
+      items={items}
+      onChange={setValue}
+      itemToString={(item) => item.title}
+    />
+  );
+}
+```
+
+### Custom mode
+
+```jsx
+function Example() {
+  const [query, setQuery] = React.useState('');
+  const [value, setValue] = React.useState('');
+  const items = [
+    { title: 'apple iphone' },
+    { title: 'apple imac' },
+    { title: 'apple watch' },
+    { title: 'apple mac pro' },
+    { title: 'apple macbook pro' },
+  ];
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    setQuery(formData.get('query'));
+  };
+
+  return (
+    <Combobox
+      mode="suggestions"
+      label="Query"
+      name="query"
+      value={query}
+      placeholder="Search"
+      items={items}
+      onChange={setValue}
+      itemToString={(item) => item.title}
+      itemRender={({ item }) => <div>{item.title}</div>}
+    />
+  );
+}
+```
+
 ## Usage
 
 ```jsx
