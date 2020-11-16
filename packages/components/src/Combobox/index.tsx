@@ -17,7 +17,10 @@ import ComboboxContextProvider from './context';
 import { useComboboxStyles } from './styles';
 import { ComboboxProps } from './types';
 
-const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInputElement>) => {
+const Combobox = React.forwardRef(function ComboboxInner<T = string>(
+  props: ComboboxProps<T>,
+  ref: React.Ref<HTMLInputElement>,
+) {
   const {
     mode = 'standard',
     label,
@@ -37,7 +40,7 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
     size = 'md',
     showDropdownTips = true,
     showPoweredBy = true,
-    itemToString = (item: string) => item,
+    itemToString = (item: T) => ((item as T) as unknown) as string,
     itemRender,
     ...rest
   } = props;
@@ -57,7 +60,7 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
     highlightedIndex,
     inputValue,
     setInputValue,
-  } = useCombobox({
+  } = useCombobox<T>({
     items,
     itemToString,
     inputValue: value.toString(),
@@ -66,6 +69,7 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
       onChange(changes.inputValue);
     },
     onSelectedItemChange: (changes) => onChange(changes.inputValue),
+    // @ts-ignore
     stateReducer: (state, { changes, type }) => {
       switch (type) {
         case useCombobox.stateChangeTypes.InputKeyDownArrowDown:
@@ -185,6 +189,7 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref: React.Ref<HTMLInpu
   });
 
   return (
+    // @ts-ignore
     <ComboboxContextProvider value={context}>
       <Box css={styles.container}>
         <Box css={styles.inputContainer} {...getComboboxProps()}>

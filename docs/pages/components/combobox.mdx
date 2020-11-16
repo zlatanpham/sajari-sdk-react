@@ -69,42 +69,6 @@ function Example() {
 }
 ```
 
-### Custom item
-
-```jsx
-function Example() {
-  const [query, setQuery] = React.useState('');
-  const [value, setValue] = React.useState('');
-  const items = [
-    { title: 'apple iphone' },
-    { title: 'apple imac' },
-    { title: 'apple watch' },
-    { title: 'apple mac pro' },
-    { title: 'apple macbook pro' },
-  ];
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    setQuery(formData.get('query'));
-  };
-
-  return (
-    <Combobox
-      mode="suggestions"
-      label="Query"
-      name="query"
-      value={query}
-      placeholder="Search"
-      items={items}
-      onChange={setValue}
-      itemToString={(item) => item.title}
-      itemRender={() => <div>{item.title}</div>}
-    />
-  );
-}
-```
-
 ### Typeahead mode
 
 You can set `mode` to `typeahead` to render a typeahead suggestion.

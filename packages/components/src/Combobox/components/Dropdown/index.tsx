@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import React from 'react';
 import tw from 'twin.macro';
 
 import { IconDownKey, IconEnterKey, IconUpKey } from '../../../assets/icons';
@@ -37,15 +38,19 @@ const Dropdown = () => {
 
       <ul {...getMenuProps()} css={styles.items}>
         {itemRender
-          ? items.map((item, index) =>
-              itemRender({
-                item,
-                index,
-                selected: highlightedIndex === index,
-                inputValue,
-                typedInputValue,
-              }),
-            )
+          ? items.map((item, index) => {
+              return (
+                <React.Fragment key={itemToString(item)}>
+                  {itemRender({
+                    item,
+                    index,
+                    selected: highlightedIndex === index,
+                    inputValue,
+                    typedInputValue,
+                  })}
+                </React.Fragment>
+              );
+            })
           : items.map((item, index) => {
               const value = itemToString(item);
               const selected = highlightedIndex === index;
