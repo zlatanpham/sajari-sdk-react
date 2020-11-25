@@ -11,11 +11,11 @@ import { TextProps } from './types';
 type DefaultElement = 'p';
 
 const TextComponent = (props: PropsWithAs<TextProps, DefaultElement>, ref: React.Ref<HTMLParagraphElement>) => {
-  const { as = 'p', size, truncate, ...rest } = props;
-  const styles = useTextStyles({ as, truncate });
+  const { as = 'p', truncate, disableDefaultStyles = false, size, styles: stylesProp, ...rest } = props;
+  const styles = disableDefaultStyles ? undefined : useTextStyles({ as, truncate });
   const sizeStyles = useTextSize({ size });
 
-  return <Box ref={ref} as={as} css={[styles, sizeStyles]} {...rest} />;
+  return <Box ref={ref} as={as} css={[styles, sizeStyles, stylesProp]} {...rest} />;
 };
 
 const Text = forwardRefWithAs<TextProps, DefaultElement>(TextComponent);

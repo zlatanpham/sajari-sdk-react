@@ -18,6 +18,7 @@ const RadioGroup = forwardRef(
       value: valueProp,
       spacing = inline ? '4' : '1',
       children,
+      styles: stylesProp,
       ...rest
     }: RadioGroupProps,
     ref,
@@ -75,7 +76,7 @@ const RadioGroup = forwardRef(
         {...rest}
         ref={rootRef}
         role="radiogroup"
-        css={[tw`flex`, inline ? tw`flex-row` : tw`flex-col`, spacingStyles]}
+        css={[tw`flex`, inline ? tw`flex-row` : tw`flex-col`, spacingStyles, stylesProp]}
       >
         {clones}
       </div>

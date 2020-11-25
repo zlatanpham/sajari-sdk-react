@@ -14,13 +14,13 @@ const defaultOptions: SortOption[] = [{ name: 'Most relevant', value: '' }];
 
 const Sorting = (props: SortingProps) => {
   const { t } = useTranslation();
-  const { label = t('sorting.label'), options = defaultOptions, size } = props;
+  const { label = t('sorting.label'), options = defaultOptions, size, styles, ...rest } = props;
   const { sorting, setSorting } = useSorting();
   const id = `sorting-${useId()}`;
 
   return (
-    <div css={tw`flex items-center space-x-4`}>
-      <Label htmlFor={id} css={tw`text-gray-500`} size={size}>
+    <div css={[tw`flex items-center space-x-4`, styles]} {...rest}>
+      <Label htmlFor={id} css={tw`text-sm text-gray-500`} size={size}>
         {label}
       </Label>
       <Select id={id} value={sorting} onChange={(e) => setSorting(e.target.value)} size={size}>

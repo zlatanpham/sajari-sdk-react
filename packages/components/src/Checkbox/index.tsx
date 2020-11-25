@@ -27,6 +27,8 @@ const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInp
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     children,
+    labelClassName,
+    styles: stylesProp,
     ...rest
   } = props;
   const theme = useTheme();
@@ -39,7 +41,7 @@ const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInp
   } as UseInputStyleProps);
 
   const comp = (
-    <Box css={tw`relative inline-flex items-center`} {...(!children ? rest : {})}>
+    <Box css={[tw`relative inline-flex items-center`, !children && stylesProp]} {...(!children ? rest : {})}>
       &#8203;
       <Box as="span" css={[tw`relative flex`, focusRingStyles]}>
         {indeterminate && (
@@ -75,10 +77,10 @@ const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInp
   }
 
   return (
-    <Box css={tw`flex items-center`} {...rest}>
+    <Box css={[tw`flex items-center`, stylesProp]} {...rest}>
       {comp}
 
-      <Label htmlFor={id} css={[tw`ml-2`, invalid ? tw`text-red-500` : []]}>
+      <Label htmlFor={id} css={[tw`ml-2`, invalid ? tw`text-red-500` : []]} className={labelClassName}>
         {children}
       </Label>
     </Box>

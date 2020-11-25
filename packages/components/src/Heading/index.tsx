@@ -30,11 +30,18 @@ const mapElementToSize = (element: HeadingElements): TextSizes => {
 };
 
 const HeadingComponent = (props: PropsWithAs<HeadingProps, DefaultElement>, ref: React.Ref<HTMLHeadingElement>) => {
-  const { as = 'h1', size = mapElementToSize(as), truncate, ...rest } = props;
+  const {
+    as = 'h1',
+    size = mapElementToSize(as),
+    truncate,
+    disableDefaultStyles = false,
+    styles: stylesProp,
+    ...rest
+  } = props;
   const styles = useHeadingStyles({ size, as, truncate });
   const sizeStyles = useTextSize({ size });
 
-  return <Box ref={ref} as={as} css={[styles, sizeStyles]} {...rest} />;
+  return <Box ref={ref} as={as} css={disableDefaultStyles ? undefined : [styles, sizeStyles]} {...rest} />;
 };
 
 const Heading = forwardRefWithAs<HeadingProps, DefaultElement>(HeadingComponent);

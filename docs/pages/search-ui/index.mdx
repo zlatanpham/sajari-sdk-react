@@ -13,3 +13,52 @@ Easy to use search components to quickly build a beautiful search interface. If 
 ```bash readonly
 yarn add @sajari/react-search-ui
 ```
+
+TBD
+
+## x. Custom styling
+
+```jsx
+function Example() {
+  const pipeline = new Pipeline(
+    {
+      project: '1594153711901724220',
+      collection: 'bestbuy',
+      endpoint: 'https://jsonapi-us-valkyrie.sajari.net',
+    },
+    'query',
+  );
+
+  const variables = new Variables({ resultsPerPage: 3 });
+
+  const SearchPlayground = React.memo(() => {
+    useSearch('iphone');
+
+    return (
+      <>
+        <Results appearance="grid" />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+          <Pagination />
+        </div>
+      </>
+    );
+  });
+
+  return (
+    <ContextProvider
+      search={{ pipeline, variables, fields: { title: 'name', subtitle: 'brand' } }}
+      customClassNames={{
+        pagination: {
+          container: 'sj-pagination',
+          button: 'sj-pagination-btn',
+          next: 'sj-pagination-next',
+          prev: 'sj-pagination-prev',
+        },
+      }}
+      disableDefaultStyles
+    >
+      <SearchPlayground />
+    </ContextProvider>
+  );
+}
+```

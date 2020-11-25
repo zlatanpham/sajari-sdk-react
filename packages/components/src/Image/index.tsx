@@ -22,13 +22,24 @@ const NativeImage = React.forwardRef((props: NativeImageProps, ref?: React.Ref<H
 });
 
 const Image = React.forwardRef((props: ImageProps, ref?: React.Ref<HTMLImageElement>) => {
-  const { src, onError, onLoad, htmlWidth, htmlHeight, aspectRatio, objectFit, ...rest } = props;
+  const {
+    src,
+    onError,
+    onLoad,
+    htmlWidth,
+    htmlHeight,
+    aspectRatio,
+    objectFit,
+    className,
+    containerClassName,
+    ...rest
+  } = props;
   const imageProps = { src, onLoad, onError, htmlWidth, htmlHeight };
   const styles = useImageStyles(props);
   const image = <Box as={NativeImage} ref={ref} css={styles.image} {...imageProps} {...rest} />;
 
   return (
-    <AspectRatio ratio={aspectRatio ?? null} css={styles.container}>
+    <AspectRatio ratio={aspectRatio ?? null} css={styles.container} className={containerClassName}>
       {src ? image : null}
     </AspectRatio>
   );

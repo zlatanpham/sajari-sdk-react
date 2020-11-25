@@ -11,7 +11,17 @@ import Label from '../Label';
 import { SelectProps } from './types';
 
 const Select = React.forwardRef((props: SelectProps, ref?: React.Ref<HTMLSelectElement>) => {
-  const { id = `select-${useId()}`, children, disabled, invalid, placeholder, label, size, ...rest } = props;
+  const {
+    id = `select-${useId()}`,
+    children,
+    disabled,
+    invalid,
+    placeholder,
+    label,
+    size,
+    styles: stylesProp,
+    ...rest
+  } = props;
   const { styles, focusRingStyles, focusProps } = useInputStyles({
     block: true,
     type: 'select',
@@ -20,7 +30,7 @@ const Select = React.forwardRef((props: SelectProps, ref?: React.Ref<HTMLSelectE
   } as UseInputStyleProps);
 
   return (
-    <Box css={[tw`relative`, focusRingStyles]}>
+    <Box css={[tw`relative`, focusRingStyles, stylesProp]}>
       {label && (
         <Label visuallyHidden htmlFor={id}>
           {label}

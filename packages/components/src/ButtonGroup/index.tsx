@@ -41,20 +41,30 @@ const StyledBox = styled<any>(Box, { shouldForwardProp: (prop) => prop !== 'atta
 `;
 
 const ButtonGroup = React.forwardRef((props: ButtonGroupProps, ref?: React.Ref<HTMLDivElement>) => {
-  const { attached = false, fullWidth, inline = true, children, as = 'div', ...rest } = props;
-  const buttonGroupStyles = useButtonGroupStyles({ attached, inline });
+  const {
+    attached = false,
+    fullWidth,
+    inline = true,
+    children,
+    as = 'div',
+    disableDefaultStyles,
+    styles: stylesProp,
+    ...rest
+  } = props;
+  const buttonGroupStyles = disableDefaultStyles ? undefined : useButtonGroupStyles({ attached, inline });
   const validChildren = cleanChildren(children);
 
   // TODO: handle case where child is Tooltip
   const clones = validChildren.map((child) =>
     cloneElement(child, {
       fullWidth,
+      disableDefaultStyles,
       ...child.props,
     }),
   );
 
   return (
-    <StyledBox attached={attached} inline={inline} as={as} ref={ref} css={buttonGroupStyles} {...rest}>
+    <StyledBox attached={attached} inline={inline} as={as} ref={ref} css={[buttonGroupStyles, stylesProp]} {...rest}>
       {clones}
     </StyledBox>
   );

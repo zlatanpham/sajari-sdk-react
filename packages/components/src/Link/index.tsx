@@ -11,16 +11,22 @@ import { LinkProps } from './types';
 
 const Link = React.forwardRef((props: LinkProps, ref?: React.Ref<HTMLAnchorElement>) => {
   const { focusProps, focusRingStyles } = useFocusRingStyles();
+  const { disableDefaultStyles = false, styles: stylesProp, ...rest } = props;
   const theme = useTheme();
 
   return (
     <a
-      {...mergeProps(props, focusProps)}
+      {...mergeProps(rest, focusProps)}
       ref={ref}
       css={[
-        tw`relative transition-colors duration-150`,
-        focusRingStyles,
-        `&:hover, &:focus { color: ${theme.color.primary.base} }`,
+        disableDefaultStyles
+          ? undefined
+          : [
+              tw`relative transition-colors duration-150`,
+              focusRingStyles,
+              `&:hover, &:focus { color: ${theme.color.primary.base} }`,
+            ],
+        stylesProp,
       ]}
     />
   );

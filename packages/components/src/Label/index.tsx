@@ -4,16 +4,24 @@ import { jsx } from '@emotion/core';
 import { __DEV__ } from '@sajari/react-sdk-utils';
 import React from 'react';
 
+import Box from '../Box';
 import { useTextSize } from '../hooks';
 import useLabelStyles from './styles';
 import { LabelProps } from './types';
 
 const Label = React.forwardRef((props: LabelProps, ref?: React.Ref<HTMLLabelElement>) => {
-  const { size } = props;
+  const { disableDefaultStyles = false, visuallyHidden, size, styles: stylesProp, ...rest } = props;
   const styles = useLabelStyles(props);
   const sizeStyles = useTextSize({ size });
 
-  return <label {...props} ref={ref} css={[styles, sizeStyles]} />;
+  return (
+    <Box
+      as="label"
+      {...rest}
+      ref={ref}
+      css={[disableDefaultStyles || !visuallyHidden ? undefined : [sizeStyles, styles], stylesProp]}
+    />
+  );
 });
 
 if (__DEV__) {

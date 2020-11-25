@@ -10,7 +10,7 @@ import { AspectRatioProps } from './types';
 type DefaultElement = 'div';
 
 const Component = (props: PropsWithAs<AspectRatioProps, DefaultElement>, ref: React.Ref<HTMLDivElement>) => {
-  const { as = 'div', ratio = 16 / 9, children, ...rest } = props;
+  const { as = 'div', ratio = 16 / 9, children, disableDefaultStyles = false, styles: stylesProp, ...rest } = props;
   let child;
 
   if (children) {
@@ -21,10 +21,10 @@ const Component = (props: PropsWithAs<AspectRatioProps, DefaultElement>, ref: Re
     }
   }
 
-  const styles = useAspectRatioStyles({ ...props, ratio });
+  const styles = disableDefaultStyles ? undefined : useAspectRatioStyles({ ...props, ratio });
 
   return (
-    <Box ref={ref} as={as} {...rest} css={styles}>
+    <Box ref={ref} as={as} {...rest} css={[styles, stylesProp]}>
       {child ? cloneElement(child) : null}
     </Box>
   );

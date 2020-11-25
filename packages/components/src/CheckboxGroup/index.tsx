@@ -16,6 +16,7 @@ const CheckboxGroup = ({
   value: valueProp,
   spacing = inline ? '4' : '1',
   children,
+  styles: stylesProp,
   ...rest
 }: CheckboxGroupProps) => {
   const [values, setValues] = useState(defaultValue || []);
@@ -55,7 +56,7 @@ const CheckboxGroup = ({
   );
 
   return (
-    <div {...rest} role="group" css={[tw`flex`, inline ? tw`flex-row` : tw`flex-col`, spacingStyles]}>
+    <div {...rest} role="group" css={[tw`flex`, inline ? tw`flex-row` : tw`flex-col`, spacingStyles, stylesProp]}>
       {clones}
     </div>
   );

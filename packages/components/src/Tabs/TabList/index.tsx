@@ -9,8 +9,7 @@ import useTabListStyles from './styles';
 import { TabListProps } from './types';
 
 const TabList = React.forwardRef((props: TabListProps, ref?: React.Ref<HTMLDivElement>) => {
-  const { children, onKeyDown, onClick, ...rest } = props;
-  const styles = useTabListStyles();
+  const { children, onKeyDown, onClick, styles: stylesProp, ...rest } = props;
   const {
     id,
     index: selectedIndex,
@@ -19,7 +18,9 @@ const TabList = React.forwardRef((props: TabListProps, ref?: React.Ref<HTMLDivEl
     manual,
     onChangeTab,
     onFocusPanel,
+    disableDefaultStyles,
   } = useTabContext();
+  const styles = disableDefaultStyles ? undefined : useTabListStyles();
   const allNodes = useRef<HTMLElement[]>([]);
   const validChildren = cleanChildren(children);
 
@@ -104,7 +105,7 @@ const TabList = React.forwardRef((props: TabListProps, ref?: React.Ref<HTMLDivEl
   });
 
   return (
-    <Box ref={ref} role="tablist" onKeyDown={handleKeyDown} css={styles} {...rest}>
+    <Box ref={ref} role="tablist" onKeyDown={handleKeyDown} css={[styles, stylesProp]} {...rest}>
       {clones}
     </Box>
   );

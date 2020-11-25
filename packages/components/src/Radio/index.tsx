@@ -28,6 +28,8 @@ const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElem
     onBlur,
     onFocus,
     children,
+    labelClassName,
+    styles: stylesProp,
     ...rest
   } = props;
 
@@ -38,7 +40,7 @@ const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElem
   } as UseInputStyleProps);
 
   const comp = (
-    <Box css={tw`inline-flex items-center`} {...(!children ? rest : {})}>
+    <Box css={[tw`inline-flex items-center`, !children && stylesProp]} {...(!children ? rest : {})}>
       &#8203;
       <Box as="span" css={[tw`relative`, focusRingStyles]}>
         <input
@@ -69,10 +71,10 @@ const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElem
   }
 
   return (
-    <Box css={tw`flex items-center`} {...rest}>
+    <Box css={[tw`flex items-center`, stylesProp]} {...rest}>
       {comp}
 
-      <Label htmlFor={id} css={[tw`ml-2`, invalid ? tw`text-red-500` : []]}>
+      <Label htmlFor={id} css={[tw`ml-2`, invalid ? tw`text-red-500` : []]} className={labelClassName}>
         {children}
       </Label>
     </Box>

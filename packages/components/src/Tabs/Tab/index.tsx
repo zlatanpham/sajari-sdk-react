@@ -2,14 +2,17 @@
 import { jsx } from '@emotion/core';
 import { mergeProps } from '@react-aria/utils';
 import { __DEV__ } from '@sajari/react-sdk-utils';
+import classnames from 'classnames';
 import React from 'react';
 
 import Box from '../../Box';
+import { useTabContext } from '../context';
 import useTabStyles from './styles';
 import { TabProps } from './types';
 
 const Tab = React.forwardRef((props: TabProps, ref?: React.Ref<HTMLButtonElement>) => {
-  const { selected, disabled, id, ...rest } = props;
+  const { selected, disabled, id, className, selectedClassName = '', ...rest } = props;
+  const { disableDefaultStyles } = useTabContext();
   const { styles, focusRingProps } = useTabStyles(props);
 
   return (
@@ -24,7 +27,8 @@ const Tab = React.forwardRef((props: TabProps, ref?: React.Ref<HTMLButtonElement
       aria-selected={selected}
       aria-disabled={disabled}
       aria-controls={`panel-${id}`}
-      css={styles}
+      className={classnames(className, { [selectedClassName]: selected })}
+      css={disableDefaultStyles ? undefined : styles}
       {...mergeProps(rest, focusRingProps)}
     />
   );
