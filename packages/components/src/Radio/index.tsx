@@ -2,13 +2,13 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useId } from '@reach/auto-id';
-import { __DEV__ } from '@sajari/react-sdk-utils';
+import { __DEV__, getStylesObject } from '@sajari/react-sdk-utils';
 import React from 'react';
-import tw from 'twin.macro';
 
 import Box from '../Box';
 import { UseInputStyleProps, useInputStyles } from '../hooks';
 import Label from '../Label';
+import useRadioStyles from './styles';
 import { RadioProps } from './types';
 
 const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElement>) => {
@@ -30,19 +30,22 @@ const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElem
     children,
     labelClassName,
     styles: stylesProp,
+    disableDefaultStyles = false,
     ...rest
   } = props;
 
-  const { styles, focusRingStyles, focusProps } = useInputStyles({
+  const styles = getStylesObject(useRadioStyles(props), disableDefaultStyles);
+
+  const { focusProps } = useInputStyles({
     block: true,
     type: 'radio',
     ...props,
   } as UseInputStyleProps);
 
   const comp = (
-    <Box css={[tw`inline-flex items-center`, !children && stylesProp]} {...(!children ? rest : {})}>
+    <Box css={[styles.componentWrapper, !children && stylesProp]} {...(!children ? rest : {})}>
       &#8203;
-      <Box as="span" css={[tw`relative`, focusRingStyles]}>
+      <Box as="span" css={styles.inputWrapper}>
         <input
           ref={ref}
           type="radio"
@@ -59,7 +62,7 @@ const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElem
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
           aria-invalid={invalid}
-          css={[tw`form-radio`, styles]}
+          css={styles.input}
           {...focusProps}
         />
       </Box>
@@ -71,10 +74,10 @@ const Radio = React.forwardRef((props: RadioProps, ref?: React.Ref<HTMLInputElem
   }
 
   return (
-    <Box css={[tw`flex items-center`, stylesProp]} {...rest}>
+    <Box css={[styles.container, stylesProp]} {...rest}>
       {comp}
 
-      <Label htmlFor={id} css={[tw`ml-2`, invalid ? tw`text-red-500` : []]} className={labelClassName}>
+      <Label htmlFor={id} css={styles.label} className={labelClassName}>
         {children}
       </Label>
     </Box>

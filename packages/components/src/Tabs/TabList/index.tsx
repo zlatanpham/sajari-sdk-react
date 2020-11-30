@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { __DEV__, cleanChildren } from '@sajari/react-sdk-utils';
+import { __DEV__, cleanChildren, getStylesObject } from '@sajari/react-sdk-utils';
 import React, { cloneElement, useRef } from 'react';
 
 import Box from '../../Box';
@@ -18,9 +18,9 @@ const TabList = React.forwardRef((props: TabListProps, ref?: React.Ref<HTMLDivEl
     manual,
     onChangeTab,
     onFocusPanel,
-    disableDefaultStyles,
+    disableDefaultStyles = false,
   } = useTabContext();
-  const styles = disableDefaultStyles ? undefined : useTabListStyles();
+  const styles = getStylesObject(useTabListStyles(), disableDefaultStyles);
   const allNodes = useRef<HTMLElement[]>([]);
   const validChildren = cleanChildren(children);
 
@@ -105,7 +105,7 @@ const TabList = React.forwardRef((props: TabListProps, ref?: React.Ref<HTMLDivEl
   });
 
   return (
-    <Box ref={ref} role="tablist" onKeyDown={handleKeyDown} css={[styles, stylesProp]} {...rest}>
+    <Box ref={ref} role="tablist" onKeyDown={handleKeyDown} css={[styles.container, stylesProp]} {...rest}>
       {clones}
     </Box>
   );

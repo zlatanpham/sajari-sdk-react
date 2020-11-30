@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { mergeProps } from '@react-aria/utils';
-import { __DEV__ } from '@sajari/react-sdk-utils';
+import { __DEV__, getStylesObject } from '@sajari/react-sdk-utils';
 import classnames from 'classnames';
 import React from 'react';
 
@@ -12,8 +12,9 @@ import { TabProps } from './types';
 
 const Tab = React.forwardRef((props: TabProps, ref?: React.Ref<HTMLButtonElement>) => {
   const { selected, disabled, id, className, selectedClassName = '', ...rest } = props;
-  const { disableDefaultStyles } = useTabContext();
-  const { styles, focusRingProps } = useTabStyles(props);
+  const { disableDefaultStyles = false } = useTabContext();
+  const { styles: containerStyles, focusRingProps } = useTabStyles(props);
+  const styles = getStylesObject({ container: containerStyles }, disableDefaultStyles);
 
   return (
     <Box
@@ -28,7 +29,7 @@ const Tab = React.forwardRef((props: TabProps, ref?: React.Ref<HTMLButtonElement
       aria-disabled={disabled}
       aria-controls={`panel-${id}`}
       className={classnames(className, { [selectedClassName]: selected })}
-      css={disableDefaultStyles ? undefined : styles}
+      css={styles.container}
       {...mergeProps(rest, focusRingProps)}
     />
   );
