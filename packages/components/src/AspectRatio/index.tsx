@@ -21,10 +21,10 @@ const Component = (props: PropsWithAs<AspectRatioProps, DefaultElement>, ref: Re
     }
   }
 
-  const styles = disableDefaultStyles ? undefined : useAspectRatioStyles({ ...props, ratio });
+  const styles = !disableDefaultStyles ? { container: useAspectRatioStyles({ ...props, ratio }) } : {};
 
   return (
-    <Box ref={ref} as={as} {...rest} css={[styles, stylesProp]}>
+    <Box ref={ref} as={as} {...rest} css={[styles.container, stylesProp]}>
       {child ? cloneElement(child) : null}
     </Box>
   );

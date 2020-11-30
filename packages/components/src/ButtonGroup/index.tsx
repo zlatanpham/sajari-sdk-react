@@ -51,7 +51,7 @@ const ButtonGroup = React.forwardRef((props: ButtonGroupProps, ref?: React.Ref<H
     styles: stylesProp,
     ...rest
   } = props;
-  const buttonGroupStyles = disableDefaultStyles ? undefined : useButtonGroupStyles({ attached, inline });
+  const styles = !disableDefaultStyles ? { container: useButtonGroupStyles({ attached, inline }) } : {};
   const validChildren = cleanChildren(children);
 
   // TODO: handle case where child is Tooltip
@@ -63,8 +63,16 @@ const ButtonGroup = React.forwardRef((props: ButtonGroupProps, ref?: React.Ref<H
     }),
   );
 
+  if (disableDefaultStyles) {
+    return (
+      <Box as={as} ref={ref} css={stylesProp} {...rest}>
+        {clones}
+      </Box>
+    );
+  }
+
   return (
-    <StyledBox attached={attached} inline={inline} as={as} ref={ref} css={[buttonGroupStyles, stylesProp]} {...rest}>
+    <StyledBox attached={attached} inline={inline} as={as} ref={ref} css={[styles.container, stylesProp]} {...rest}>
       {clones}
     </StyledBox>
   );

@@ -1,7 +1,7 @@
 import { css, SerializedStyles } from '@emotion/core';
 import { TwStyle } from 'twin.macro';
 
-export function mapStyles(styles: Record<string, (TwStyle | string)[]>): Record<string, SerializedStyles> {
+export function mapStyles<T = Record<string, (TwStyle | string)[]>>(styles: T): Record<keyof T, SerializedStyles> {
   return Object.entries(styles).reduce((obj, [key, value]) => Object.assign(obj, { [key]: css(value) }), {}) as Record<
     keyof typeof styles,
     SerializedStyles

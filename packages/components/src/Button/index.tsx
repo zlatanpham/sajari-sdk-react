@@ -47,7 +47,7 @@ const Button = React.forwardRef((props: ButtonProps, ref?: React.Ref<HTMLElement
     onBlur: () => setFocused(false),
   });
 
-  const { styles, focusRingProps } = useButtonStyles({
+  const { styles: containerStyles, focusRingProps } = useButtonStyles({
     pressed,
     appearance,
     disabled,
@@ -60,13 +60,14 @@ const Button = React.forwardRef((props: ButtonProps, ref?: React.Ref<HTMLElement
   });
 
   const customProps = mergeProps(buttonProps, focusProps, hoverProps, focusRingProps);
+  const styles = !disableDefaultStyles ? { container: containerStyles } : {};
 
   return (
     <Box
       as={as}
       ref={ownRef}
       {...customProps}
-      css={disableDefaultStyles ? undefined : [styles, stylesProps]}
+      css={[styles.container, stylesProps]}
       className={classnames(className, {
         [pressedClassName]: pressed,
       })}

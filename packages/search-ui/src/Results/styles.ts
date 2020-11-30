@@ -23,8 +23,8 @@ export default function useResultsStyles({
   gap: gapProp = appearance === 'list' ? { 0: 4, 640: 8 } : undefined,
   width,
 }: Props) {
-  const styles: Record<string, TwStyle[]> = {
-    container: [],
+  const styles = {
+    container: [] as TwStyle[],
   };
 
   if (appearance === 'list') {
