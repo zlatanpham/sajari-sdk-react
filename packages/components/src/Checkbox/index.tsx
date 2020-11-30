@@ -1,13 +1,13 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useId } from '@reach/auto-id';
-import { __DEV__, useTheme } from '@sajari/react-sdk-utils';
+import { __DEV__, getStylesObject } from '@sajari/react-sdk-utils';
 import React from 'react';
-import tw from 'twin.macro';
 
 import Box from '../Box';
 import { UseInputStyleProps, useInputStyles } from '../hooks';
 import Label from '../Label';
+import { useCheckboxStyles } from './styles';
 import { CheckboxProps } from './types';
 
 const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInputElement>) => {
@@ -29,24 +29,25 @@ const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInp
     children,
     labelClassName,
     styles: stylesProp,
+    disableDefaultStyles = false,
     ...rest
   } = props;
-  const theme = useTheme();
 
-  // TODO: Should return all required styles
-  const { styles, focusRingStyles, focusProps } = useInputStyles({
+  const styles = getStylesObject(useCheckboxStyles(props), disableDefaultStyles);
+
+  const { focusProps } = useInputStyles({
     type: 'checkbox',
     indeterminate,
     ...props,
   } as UseInputStyleProps);
 
   const comp = (
-    <Box css={[tw`relative inline-flex items-center`, !children && stylesProp]} {...(!children ? rest : {})}>
+    <Box css={[styles.componentWrapper, !children && stylesProp]} {...(!children ? rest : {})}>
       &#8203;
-      <Box as="span" css={[tw`relative flex`, focusRingStyles]}>
+      <Box as="span" css={styles.inputWrapper}>
         {indeterminate && (
-          <Box css={tw`absolute inset-0 flex items-center justify-center`}>
-            <Box css={[tw`m-auto w-1/2 h-0.5 rounded-sm`, { backgroundColor: theme.color.primary.text }]} />
+          <Box css={styles.indeterminate}>
+            <Box css={styles.indeterminateInner} />
           </Box>
         )}
         <input
@@ -65,7 +66,7 @@ const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInp
           aria-invalid={invalid}
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
-          css={[tw`form-checkbox`, styles]}
+          css={styles.input}
           {...focusProps}
         />
       </Box>
@@ -77,10 +78,10 @@ const Checkbox = React.forwardRef((props: CheckboxProps, ref?: React.Ref<HTMLInp
   }
 
   return (
-    <Box css={[tw`flex items-center`, stylesProp]} {...rest}>
+    <Box css={[styles.container, stylesProp]} {...rest}>
       {comp}
 
-      <Label htmlFor={id} css={[tw`ml-2`, invalid ? tw`text-red-500` : []]} className={labelClassName}>
+      <Label htmlFor={id} css={styles.label} className={labelClassName}>
         {children}
       </Label>
     </Box>
