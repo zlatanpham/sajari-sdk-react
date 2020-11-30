@@ -3,7 +3,7 @@ import { jsx } from '@emotion/core';
 import { useButton } from '@react-aria/button';
 import { useFocus, useHover } from '@react-aria/interactions';
 import { mergeProps } from '@react-aria/utils';
-import { mergeRefs } from '@sajari/react-sdk-utils';
+import { getStylesObject, mergeRefs } from '@sajari/react-sdk-utils';
 import classnames from 'classnames';
 import React, { useRef } from 'react';
 
@@ -60,7 +60,7 @@ const Button = React.forwardRef((props: ButtonProps, ref?: React.Ref<HTMLElement
   });
 
   const customProps = mergeProps(buttonProps, focusProps, hoverProps, focusRingProps);
-  const styles = !disableDefaultStyles ? { container: containerStyles } : {};
+  const styles = getStylesObject({ container: containerStyles }, disableDefaultStyles);
 
   return (
     <Box

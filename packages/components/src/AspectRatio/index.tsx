@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { forwardRefWithAs, PropsWithAs } from '@sajari/react-sdk-utils';
+import { forwardRefWithAs, getStylesObject, PropsWithAs } from '@sajari/react-sdk-utils';
 import React, { Children, cloneElement, isValidElement } from 'react';
 
 import Box from '../Box';
@@ -21,7 +21,7 @@ const Component = (props: PropsWithAs<AspectRatioProps, DefaultElement>, ref: Re
     }
   }
 
-  const styles = !disableDefaultStyles ? { container: useAspectRatioStyles({ ...props, ratio }) } : {};
+  const styles = getStylesObject({ container: useAspectRatioStyles({ ...props, ratio }) }, disableDefaultStyles);
 
   return (
     <Box ref={ref} as={as} {...rest} css={[styles.container, stylesProp]}>

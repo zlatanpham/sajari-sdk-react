@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { __DEV__ } from '@sajari/react-sdk-utils';
+import { __DEV__, getStylesObject } from '@sajari/react-sdk-utils';
 import React from 'react';
 
 import AspectRatio from '../AspectRatio';
@@ -32,10 +32,11 @@ const Image = React.forwardRef((props: ImageProps, ref?: React.Ref<HTMLImageElem
     objectFit,
     className,
     containerClassName,
+    disableDefaultStyles = false,
     ...rest
   } = props;
   const imageProps = { src, onLoad, onError, htmlWidth, htmlHeight };
-  const styles = useImageStyles(props);
+  const styles = getStylesObject(useImageStyles(props), disableDefaultStyles);
   const image = <Box as={NativeImage} ref={ref} css={styles.image} {...imageProps} {...rest} />;
 
   return (

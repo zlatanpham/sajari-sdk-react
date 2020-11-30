@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { __DEV__, cleanChildren } from '@sajari/react-sdk-utils';
+import { __DEV__, cleanChildren, getStylesObject } from '@sajari/react-sdk-utils';
 import React, { cloneElement } from 'react';
 import tw, { styled } from 'twin.macro';
 
@@ -47,11 +47,11 @@ const ButtonGroup = React.forwardRef((props: ButtonGroupProps, ref?: React.Ref<H
     inline = true,
     children,
     as = 'div',
-    disableDefaultStyles,
+    disableDefaultStyles = false,
     styles: stylesProp,
     ...rest
   } = props;
-  const styles = !disableDefaultStyles ? { container: useButtonGroupStyles({ attached, inline }) } : {};
+  const styles = getStylesObject({ container: useButtonGroupStyles({ attached, inline }) }, disableDefaultStyles);
   const validChildren = cleanChildren(children);
 
   // TODO: handle case where child is Tooltip

@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { clamp } from '@sajari/react-sdk-utils';
+import { clamp, getStylesObject } from '@sajari/react-sdk-utils';
 import classnames from 'classnames';
 import tw from 'twin.macro';
 
@@ -8,7 +8,7 @@ import { IconChevronLeft, IconChevronRight } from '../assets/icons';
 import Box from '../Box';
 import Button from '../Button';
 import ButtonGroup from '../ButtonGroup';
-import { useJustifyContent } from '../hooks';
+import usePaginationStyles from './styles';
 import { PaginationProps } from './types';
 
 const defaultI18n = {
@@ -113,7 +113,6 @@ const Pagination = (props: PaginationProps) => {
     pageSize,
     page,
     onChange,
-    align = 'center',
     i18n: i18nProp,
     buttonClassName,
     activeClassName,
@@ -122,11 +121,11 @@ const Pagination = (props: PaginationProps) => {
     spacerEllipsisClassName,
     pressedClassName,
     styles: stylesProp,
+    disableDefaultStyles = false,
     ...rest
   } = props;
   const i18n = { ...defaultI18n, ...i18nProp };
   let { pageCount } = props;
-  const justifyContentStyles = useJustifyContent({ align });
 
   if (!totalResults || !pageSize) {
     return null;
@@ -151,8 +150,10 @@ const Pagination = (props: PaginationProps) => {
     onChange(clamp(target, 1, pageCount));
   };
 
+  const styles = getStylesObject(usePaginationStyles(props), disableDefaultStyles);
+
   return (
-    <ButtonGroup as="nav" aria-label={i18n.label} attached css={[tw`flex`, justifyContentStyles, stylesProp]} {...rest}>
+    <ButtonGroup as="nav" aria-label={i18n.label} attached css={[styles.container, stylesProp]} {...rest}>
       <Button
         spacing="compact"
         disabled={!hasPrevious}

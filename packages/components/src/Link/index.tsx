@@ -2,34 +2,19 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { mergeProps } from '@react-aria/utils';
-import { __DEV__, useTheme } from '@sajari/react-sdk-utils';
+import { __DEV__, getStylesObject } from '@sajari/react-sdk-utils';
 import React from 'react';
-import tw from 'twin.macro';
 
 import { useFocusRingStyles } from '../hooks';
+import useLinkStyles from './styles';
 import { LinkProps } from './types';
 
 const Link = React.forwardRef((props: LinkProps, ref?: React.Ref<HTMLAnchorElement>) => {
-  const { focusProps, focusRingStyles } = useFocusRingStyles();
+  const { focusProps } = useFocusRingStyles();
   const { disableDefaultStyles = false, styles: stylesProp, ...rest } = props;
-  const theme = useTheme();
+  const styles = getStylesObject(useLinkStyles(), disableDefaultStyles);
 
-  return (
-    <a
-      {...mergeProps(rest, focusProps)}
-      ref={ref}
-      css={[
-        disableDefaultStyles
-          ? undefined
-          : [
-              tw`relative transition-colors duration-150`,
-              focusRingStyles,
-              `&:hover, &:focus { color: ${theme.color.primary.base} }`,
-            ],
-        stylesProp,
-      ]}
-    />
-  );
+  return <a {...mergeProps(rest, focusProps)} ref={ref} css={[styles.container, stylesProp]} />;
 });
 
 if (__DEV__) {

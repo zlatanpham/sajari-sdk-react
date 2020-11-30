@@ -1,28 +1,28 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useId } from '@reach/auto-id';
-import { cleanChildren } from '@sajari/react-sdk-utils';
+import { cleanChildren, getStylesObject } from '@sajari/react-sdk-utils';
 import React, { cloneElement, useRef, useState } from 'react';
-import tw from 'twin.macro';
 
-import { useSpacing } from '../hooks';
+import { useCheckboxGroupStyles } from './styles';
 import { CheckboxGroupProps } from './types';
 
-const CheckboxGroup = ({
-  onChange,
-  name,
-  defaultValue,
-  inline,
-  value: valueProp,
-  spacing = inline ? '4' : '1',
-  children,
-  styles: stylesProp,
-  ...rest
-}: CheckboxGroupProps) => {
+const CheckboxGroup = (props: CheckboxGroupProps) => {
+  const {
+    onChange,
+    name,
+    defaultValue,
+    inline,
+    value: valueProp,
+    children,
+    styles: stylesProp,
+    disableDefaultStyles = false,
+    ...rest
+  } = props;
   const [values, setValues] = useState(defaultValue || []);
   const { current: isControlled } = useRef(valueProp != null);
   const internalValues = (isControlled ? valueProp : values) || [];
-  const spacingStyles = useSpacing({ spacing, inline });
+  const styles = getStylesObject(useCheckboxGroupStyles(props), disableDefaultStyles);
 
   const internalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked, value } = event.target;
@@ -56,7 +56,7 @@ const CheckboxGroup = ({
   );
 
   return (
-    <div {...rest} role="group" css={[tw`flex`, inline ? tw`flex-row` : tw`flex-col`, spacingStyles, stylesProp]}>
+    <div {...rest} role="group" css={[styles.container, stylesProp]}>
       {clones}
     </div>
   );

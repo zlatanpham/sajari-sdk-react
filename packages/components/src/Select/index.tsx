@@ -1,13 +1,13 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useId } from '@reach/auto-id';
-import { __DEV__ } from '@sajari/react-sdk-utils';
+import { __DEV__, getStylesObject } from '@sajari/react-sdk-utils';
 import React from 'react';
-import tw from 'twin.macro';
 
 import Box from '../Box';
 import { UseInputStyleProps, useInputStyles } from '../hooks';
 import Label from '../Label';
+import { useSelectStyles } from './styles';
 import { SelectProps } from './types';
 
 const Select = React.forwardRef((props: SelectProps, ref?: React.Ref<HTMLSelectElement>) => {
@@ -20,17 +20,20 @@ const Select = React.forwardRef((props: SelectProps, ref?: React.Ref<HTMLSelectE
     label,
     size,
     styles: stylesProp,
+    disableDefaultStyles = false,
     ...rest
   } = props;
-  const { styles, focusRingStyles, focusProps } = useInputStyles({
+  const { focusProps } = useInputStyles({
     block: true,
     type: 'select',
     size,
     ...props,
   } as UseInputStyleProps);
 
+  const styles = getStylesObject(useSelectStyles(props), disableDefaultStyles);
+
   return (
-    <Box css={[tw`relative`, focusRingStyles, stylesProp]}>
+    <Box css={[styles.container, stylesProp]}>
       {label && (
         <Label visuallyHidden htmlFor={id}>
           {label}
@@ -44,7 +47,7 @@ const Select = React.forwardRef((props: SelectProps, ref?: React.Ref<HTMLSelectE
         dir="auto"
         disabled={disabled}
         aria-invalid={invalid}
-        css={[tw`form-select`, styles]}
+        css={styles.select}
         {...focusProps}
         {...rest}
       >
