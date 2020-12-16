@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/zlatanpham/sajari-sdk-react/compare/@sajari/react-search-ui@1.2.0...@sajari/react-search-ui@1.3.0) (2020-12-16)
+
+### Features
+
+- todo ([057afa8](https://github.com/zlatanpham/sajari-sdk-react/commit/057afa868817e4678db5fcdfa5bb37624addea26))
+
 # [1.2.0](https://github.com/zlatanpham/sajari-sdk-react/compare/@sajari/react-search-ui@1.1.3...@sajari/react-search-ui@1.2.0) (2020-12-16)
 
 ### Features
