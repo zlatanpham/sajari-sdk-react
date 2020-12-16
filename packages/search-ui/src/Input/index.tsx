@@ -4,6 +4,7 @@ import { __DEV__ } from '@sajari/react-sdk-utils';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// TODO: test
 import { useSearchUIContext } from '../ContextProvider';
 import { ResultValues } from '../Results/types';
 import mapResultFields from '../utils/mapResultFields';
