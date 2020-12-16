@@ -15,7 +15,7 @@
     "format": "prettier -c --write \"*/**\"",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "release": "lerna publish"
+    "release": "lerna publish --registry http://localhost:4873"
   },
   "workspaces": [
     "packages/*",
@@ -76,5 +76,8 @@
     "tsdx": "^0.14.1",
     "tslib": "2.0.3",
     "typescript": "^4.1.3"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873"
   }
 }
